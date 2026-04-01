@@ -8,7 +8,7 @@
 
     <dimen name="margin_top_between_buttons">14dp</dimen>
     <dimen name="margin_top_title">10dp</dimen>
-    <dimen name="margin_bottom_title">40dp</dimen>
+    <dimen name="margin_bottom_title">12dp</dimen>
     <dimen name="margin_bottom_buttons_container">28dp</dimen>
     <dimen name="margin_between_elements">24dp</dimen>
     <dimen name="margin_top_settings_container">24dp</dimen>
