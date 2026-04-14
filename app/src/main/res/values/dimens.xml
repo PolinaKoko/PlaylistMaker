@@ -6,7 +6,7 @@
     <dimen name="padding_vertical_item">12dp</dimen>
     <dimen name="padding_top_settings">8dp</dimen>
 
-    <dimen name="margin_top_between_buttons">14dp</dimen>
+    <dimen name="margin_top_between_buttons">16dp</dimen>
     <dimen name="margin_top_title">10dp</dimen>
     <dimen name="margin_bottom_title">12dp</dimen>
     <dimen name="margin_bottom_buttons_container">28dp</dimen>
@@ -23,4 +23,9 @@
     <dimen name="button_padding_horizontal">16dp</dimen>
     <dimen name="icon_padding">8dp</dimen>
     <dimen name="icon_size_medium">24dp</dimen>
+
+    <dimen name="search_field_corner_radius">12dp</dimen>
+    <dimen name="padding_horizontal_search">16dp</dimen>
+    <dimen name="padding_vertical_search">8dp</dimen>
+
 </resources>
