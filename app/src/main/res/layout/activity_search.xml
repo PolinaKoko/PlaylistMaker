@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_start_back_icon"
             android:paddingStart="@dimen/margin_start_back_icon"
-            android:text="@string/search"
-            android:textColor="?attr/colorOnSurface" />
+            android:text="@string/search" />
     </LinearLayout>
 
     <FrameLayout
@@ -47,19 +46,17 @@
 
             <EditText
                 android:id="@+id/search_edit_text"
+                style="@style/SearchEditTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="8dp"
-                android:drawableTint="?attr/colorOnSurfaceVariant"
                 android:hint="@string/search"
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textColorHint="?attr/colorOnSurfaceVariant" />
+                android:paddingVertical="8dp" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -70,7 +67,8 @@
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_clear"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:tint="?attr/colorOnSurfaceVariant" />
 
     </FrameLayout>
 

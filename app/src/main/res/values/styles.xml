@@ -66,7 +66,7 @@
     <style name="SettingsIconStyle">
         <item name="android:layout_width">@dimen/icon_size_medium</item>
         <item name="android:layout_height">@dimen/icon_size_medium</item>
-        <item name="tint">@color/gray</item>
+        <item name="tint">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <style name="SearchTitleStyle">
@@ -77,5 +77,12 @@
         <item name="android:textFontWeight">500</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
+
+    <style name="SearchEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">?attr/colorOnSurfaceVariant</item>
+        <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
+    </style>
+
 
 </resources>
