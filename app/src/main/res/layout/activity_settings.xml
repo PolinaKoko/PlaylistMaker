@@ -42,10 +42,11 @@
                 style="@style/SettingsItemTextStyle"
                 android:text="@string/dark_theme" />
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/theme_switch"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:theme="@style/SettingsSwitchStyle"/>
         </LinearLayout>
 
         <LinearLayout
