@@ -31,7 +31,13 @@
         <item name="colorOnSurfaceVariant">@color/black</item>
 
         <item name="android:editTextColor">@color/black</item>
-        <!--        <item name="colorOnSurface">@color/black</item>-->
+
+    </style>
+
+    <style name="Theme.PlaylistMaker.TrackItem" parent="">
+        <item name="colorOnSurfaceVariant">@color/white
+        </item>    <!-- исполнитель, точка, стрелка -->
+        <item name="colorOnSurface">@color/white</item>           <!-- название трека -->
     </style>
 
 </resources>
