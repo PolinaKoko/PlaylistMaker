@@ -53,10 +53,12 @@
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="8dp"
                 android:hint="@string/search"
+                android:imeOptions="actionDone"
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp" />
+                android:paddingVertical="8dp"
+                android:singleLine="true" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -77,7 +79,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        android:paddingHorizontal="12dp"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:paddingHorizontal="12dp" />
 
+    <LinearLayout
+        android:id="@+id/placeholderEmpty"
+        style="@style/PlaceholderContainerStyle"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_placeholder_empty"
+            style="@style/PlaceholderIconStyle" />
+
+        <TextView
+            android:text="@string/nothing_found"
+            style="@style/PlaceholderTitleStyle"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/placeholderError"
+        style="@style/PlaceholderContainerStyle"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_placeholder_error_internet"
+            style="@style/PlaceholderIconStyle" />
+
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/connection_error_full"
+            style="@style/PlaceholderTitleStyle"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/retryButton"
+            style="@style/PlaceholderButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry" />
+
+    </LinearLayout>
 </LinearLayout>

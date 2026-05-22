@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PlaceholderButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/placeholder_button_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:lineSpacingMultiplier">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/placeholder_button_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/placeholder_button_padding_horizontal</item>
+        <item name="android:paddingTop">@dimen/placeholder_button_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/placeholder_button_padding_vertical</item>
+        <item name="android:layout_marginTop">@dimen/placeholder_button_margin_top</item>
+        <item name="cornerRadius">@dimen/placeholder_button_corner_radius</item>
+        <item name="backgroundTint">@color/white</item>
+    </style>
+
+</resources>

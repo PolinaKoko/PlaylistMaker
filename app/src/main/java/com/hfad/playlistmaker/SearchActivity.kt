@@ -1,73 +1,33 @@
 package com.hfad.playlistmaker
 
-import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var placeholderEmpty: LinearLayout
+    private lateinit var placeholderError: LinearLayout
+    private lateinit var retryButton: Button
     private lateinit var adapter: TrackAdapter
-    private val allTracks = getMockTracks()
-    private var searchText: String = ""
+    private var lastQuery = ""
 
-    private fun getMockTracks(): List<Track> {
-        return listOf(
-            Track(
-                trackName = "Smells Like Teen Spirit",
-                artistName = "Nirvana",
-                trackTime = "5:01",
-                artworkUrl100 = "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                trackName = "Billie Jean",
-                artistName = "Michael Jackson",
-                trackTime = "4:35",
-                artworkUrl100 = "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"
-            ),
-            Track(
-                trackName = "Stayin' Alive",
-                artistName = "Bee Gees",
-                trackTime = "4:10",
-                artworkUrl100 = "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"
-            ),
-            Track(
-                trackName = "Whole Lotta Love",
-                artistName = "Led Zeppelin",
-                trackTime = "5:33",
-                artworkUrl100 = "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"
-            ),
-            Track(
-                trackName = "Sweet Child O'Mine",
-                artistName = "Guns N' Roses",
-                trackTime = "5:03",
-                artworkUrl100 = "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"
-            )
-        )
-    }
-
-    private fun filterTracks(queue: String) {
-        if (queue.isEmpty()) {
-            adapter.updateTracks(allTracks)
-        } else {
-            val filtered = allTracks.filter { track ->
-                track.trackName.contains(queue, ignoreCase = true) || track.artistName.contains(
-                    queue,
-                    ignoreCase = true
-                )
-            }
-            adapter.updateTracks(filtered)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,45 +37,108 @@ class SearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.search_edit_text)
         clearButton = findViewById(R.id.clear_button)
         recyclerView = findViewById(R.id.rvTracks)
+        placeholderEmpty = findViewById(R.id.placeholderEmpty)
+        placeholderError = findViewById(R.id.placeholderError)
+        retryButton = findViewById(R.id.retryButton)
 
         adapter = TrackAdapter()
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        adapter.updateTracks(getMockTracks())
-
-
         backButton.setOnClickListener {
             finish()
         }
 
-        searchEditText.doOnTextChanged { text, start, before, count ->
-            searchText = text.toString()
-            clearButton.visibility = if (text.isNullOrEmpty()) View.GONE else View.VISIBLE
-            filterTracks(text.toString())
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                if (s.isNullOrEmpty()) {
+                    adapter.updateTracks(emptyList())
+                    showResults(false)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val query = searchEditText.text.toString()
+                if (query.isNotEmpty()) {
+                    searchTracks(query)
+                    hideKeyboard()
+                }
+                true
+            } else false
         }
 
         clearButton.setOnClickListener {
             searchEditText.text.clear()
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+            hideKeyboard()
+            showResults(false)
+            showError(false)
+            showEmpty(false)
+            adapter.updateTracks(emptyList())
+        }
+
+        retryButton.setOnClickListener {
+            if (lastQuery.isNotEmpty()) {
+                searchTracks(lastQuery)
+            }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(KEY_SEARCH_TEXT, searchText)
+    private fun searchTracks(query: String) {
+        lastQuery = query
+
+        RetrofitClient.api.searchTracks(query).enqueue(object : Callback<TrackResponse> {
+            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+                when (response.code()) {
+                    200 -> {
+                        val tracks = response.body()?.results ?: emptyList()
+                        if (tracks.isEmpty()) {
+                            showEmpty(true)
+                            adapter.updateTracks(emptyList())
+                        } else {
+                            showResults(true)
+                            adapter.updateTracks(tracks)
+                        }
+                    }
+
+                    else -> showError(true)
+                }
+            }
+
+            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                showError(true)
+            }
+        })
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchText = savedInstanceState.getString(KEY_SEARCH_TEXT, "")
-        if (searchText.isNotEmpty()) {
-            searchEditText.setText(searchText)
-        }
+    private fun showResults(show: Boolean) {
+        recyclerView.visibility = if (show) View.VISIBLE else View.GONE
+        placeholderEmpty.visibility = View.GONE
+        placeholderError.visibility = View.GONE
     }
 
-    companion object {
-        private const val KEY_SEARCH_TEXT = "SEARCH_TEXT"
+    private fun showEmpty(show: Boolean) {
+        recyclerView.visibility = View.GONE
+        placeholderEmpty.visibility = if (show) View.VISIBLE else View.GONE
+        placeholderError.visibility = View.GONE
+    }
+
+    private fun showError(show: Boolean) {
+        recyclerView.visibility = View.GONE
+        placeholderEmpty.visibility = View.GONE
+        placeholderError.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
     }
 }
