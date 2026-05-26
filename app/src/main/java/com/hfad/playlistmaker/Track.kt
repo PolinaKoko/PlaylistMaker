@@ -4,6 +4,7 @@ import android.icu.text.SimpleDateFormat
 import java.util.Locale
 
 data class Track(
+    val trackId: Int,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,

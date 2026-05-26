@@ -42,11 +42,13 @@
                 style="@style/SettingsItemTextStyle"
                 android:text="@string/dark_theme" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/theme_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:theme="@style/SettingsSwitchStyle"/>
+                android:layout_width="@dimen/switch_width"
+                android:layout_height="@dimen/switch_height"
+                android:scaleX="0.85"
+                android:scaleY="0.85"
+                android:theme="@style/SettingsSwitchStyle" />
         </LinearLayout>
 
         <LinearLayout
