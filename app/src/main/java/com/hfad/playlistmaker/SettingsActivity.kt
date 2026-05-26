@@ -24,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val app = applicationContext as App
 
-        themeSwitch.isChecked = app.darkTheme
+        themeSwitch.isChecked = app.isDarkTheme()
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             app.switchTheme(isChecked)

@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatDelegate
 
 class App : Application() {
     companion object {
-        const val PREFS_NAME = "app_preferences"
+        const val PREFS_NAME = "playlist_maker_prefs"
         const val THEME_KEY = "dark_theme"
     }
 
-    var darkTheme = false
+    private var darkTheme = false
+
+    fun isDarkTheme(): Boolean = darkTheme
 
     override fun onCreate() {
         super.onCreate()

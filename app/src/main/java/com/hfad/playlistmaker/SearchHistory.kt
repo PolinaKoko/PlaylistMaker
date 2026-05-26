@@ -7,14 +7,17 @@ import com.google.gson.reflect.TypeToken
 class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private val gson = Gson()
-    private val historyKey = "search_history"
-    private val maxHistorySize = 10
+
+    companion object {
+        private val TRACK_LIST_TYPE = object : TypeToken<List<Track>>() {}.type
+        private const val HISTORY_KEY = "search_history"
+        private const val MAX_HISTORY_SIZE = 10
+    }
 
     fun getHistory(): List<Track> {
-        val json = sharedPreferences.getString(historyKey, null)
+        val json = sharedPreferences.getString(HISTORY_KEY, null)
         return if (json != null) {
-            val type = object : TypeToken<List<Track>>() {}.type
-            gson.fromJson(json, type)
+            gson.fromJson(json, TRACK_LIST_TYPE)
         } else {
             emptyList()
         }
@@ -26,8 +29,8 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
         currentHistory.add(0, track)
 
-        val updatedHistory = if (currentHistory.size > maxHistorySize) {
-            currentHistory.subList(0, maxHistorySize)
+        val updatedHistory = if (currentHistory.size > MAX_HISTORY_SIZE) {
+            currentHistory.subList(0, MAX_HISTORY_SIZE)
         } else {
             currentHistory
         }
@@ -40,6 +43,6 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private fun saveHistory(history: List<Track>) {
         val json = gson.toJson(history)
-        sharedPreferences.edit().putString(historyKey, json).apply()
+        sharedPreferences.edit().putString(HISTORY_KEY, json).apply()
     }
 }

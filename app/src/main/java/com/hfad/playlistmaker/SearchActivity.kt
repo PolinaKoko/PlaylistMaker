@@ -37,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val sharedPrefs = getSharedPreferences("playlist_maker_prefs", MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(App.PREFS_NAME, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPrefs)
         initViews()
         setupAdapters()
