@@ -77,10 +77,45 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTracks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
-        android:paddingHorizontal="12dp" />
+        android:paddingHorizontal="12dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/historyContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/history_container_margin_top"
+        android:paddingHorizontal="@dimen/search_results_padding_horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/historyTitle"
+            style="@style/HistoryTitleStyle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/history_list_margin_top"
+            android:layout_marginBottom="@dimen/history_list_margin_bottom" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearHistoryButton"
+            style="@style/PlaceholderButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/history_button_margin_bottom"
+            android:text="@string/clear_history" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/placeholderEmpty"

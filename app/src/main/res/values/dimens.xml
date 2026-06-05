@@ -23,10 +23,23 @@
     <dimen name="button_padding_horizontal">16dp</dimen>
     <dimen name="icon_padding">8dp</dimen>
     <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="switch_width">48dp</dimen>
+    <dimen name="switch_height">24dp</dimen>
 
     <dimen name="search_field_corner_radius">12dp</dimen>
     <dimen name="padding_horizontal_search">16dp</dimen>
     <dimen name="padding_vertical_search">8dp</dimen>
+
+    <dimen name="history_container_margin_top">24dp</dimen>
+    <dimen name="search_results_padding_horizontal">12dp</dimen>
+    <dimen name="history_title_margin_top">18dp</dimen>
+    <dimen name="history_title_margin_horizontal">16dp</dimen>
+    <dimen name="history_title_margin_bottom">12dp</dimen>
+    <dimen name="history_list_margin_top">8dp</dimen>
+    <dimen name="history_list_margin_bottom">24dp</dimen>
+    <dimen name="history_button_margin_bottom">16dp</dimen>
+
+    <dimen name="history_title_text_size">19sp</dimen>
 
     <dimen name="track_artwork_size">45dp</dimen>
     <dimen name="track_artwork_margin_vertical">8dp</dimen>
