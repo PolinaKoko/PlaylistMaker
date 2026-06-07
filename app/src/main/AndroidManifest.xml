@@ -37,6 +37,11 @@
             android:name=".MediaActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".AudioPlayerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PlaylistMaker.AudioPlayer" />
+
     </application>
 
 </manifest>

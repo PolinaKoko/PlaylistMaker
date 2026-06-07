@@ -1,5 +1,6 @@
 package com.hfad.playlistmaker
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -78,6 +79,11 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = TrackAdapter { track ->
             searchHistory.addTrack(track)
+
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
+
             updateHistoryAdapter()
             updateHistoryVisibility()
         }
@@ -88,6 +94,11 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter = TrackAdapter { track ->
             searchHistory.addTrack(track)
+
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
+
             updateHistoryAdapter()
             updateHistoryVisibility()
 
@@ -172,8 +183,7 @@ class SearchActivity : AppCompatActivity() {
 
         RetrofitClient.api.searchTracks(query).enqueue(object : Callback<TrackResponse> {
             override fun onResponse(
-                call: Call<TrackResponse>,
-                response: Response<TrackResponse>
+                call: Call<TrackResponse>, response: Response<TrackResponse>
             ) {
 
                 if (response.isSuccessful) {
