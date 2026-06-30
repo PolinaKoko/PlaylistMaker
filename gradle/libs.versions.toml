@@ -1,8 +1,9 @@
 [versions]
 agp = "9.0.1"
+kotlin = "2.2.0"
+kotlinStdlib = "2.2.0"
 converterGson = "2.9.0"
-coreKtx = "1.18.0"
-coreKtxVersion = "1.12.0"
+coreKtx = "1.18.0"  # ← Осталась одна версия
 glide = "4.14.2"
 gson = "2.10"
 junit = "4.13.2"
@@ -14,8 +15,9 @@ activity = "1.13.0"
 constraintlayout = "2.2.1"
 
 [libraries]
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
@@ -31,4 +33,4 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
