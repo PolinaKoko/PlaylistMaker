@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.ui.player
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
@@ -12,18 +12,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.domain.models.Track
 import java.util.Locale
 
-
 class AudioPlayerActivity : AppCompatActivity() {
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val TIMER_UPDATE_DELAY = 300L
-    }
 
     private lateinit var track: Track
     private lateinit var btnPlay: ImageButton
@@ -32,8 +25,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     private var mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
 
-
     private val handler = Handler(Looper.getMainLooper())
+
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+
     private val timerRunnable = object : Runnable {
         override fun run() {
             if (playerState == STATE_PLAYING) {
@@ -44,7 +39,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer() {
-
         try {
             val url = track.previewUrl
             if (url.isNullOrEmpty()) {
@@ -64,7 +58,7 @@ class AudioPlayerActivity : AppCompatActivity() {
                 btnPlay.setImageResource(R.drawable.ic_play)
                 playerState = STATE_PREPARED
                 stopTimer()
-                tvCurrentTime.text = "00:00"
+                tvCurrentTime.text = formatTime(0)
             }
 
         } catch (e: Exception) {
@@ -72,7 +66,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             btnPlay.isEnabled = false
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,12 +120,18 @@ class AudioPlayerActivity : AppCompatActivity() {
         handler.removeCallbacks(timerRunnable)
     }
 
+    private fun formatTime(milliseconds: Int): String {
+        return try {
+            dateFormat.format(milliseconds)
+        } catch (e: Exception) {
+            "00:00"
+        }
+    }
+
     private fun updateTimer() {
         try {
             val currentPosition = mediaPlayer.currentPosition
-            val formattedTime = SimpleDateFormat("mm:ss", Locale.getDefault())
-                .format(currentPosition)
-            tvCurrentTime.text = formattedTime
+            tvCurrentTime.text = formatTime(currentPosition)
         } catch (e: Exception) {
             tvCurrentTime.text = "00:00"
         }
@@ -153,7 +152,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun fillData() {
-
         findViewById<TextView>(R.id.tvTrackName).text = track.trackName
         findViewById<TextView>(R.id.tvArtistName).text = track.artistName
 
@@ -198,5 +196,13 @@ class AudioPlayerActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
         }
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val TIMER_UPDATE_DELAY = 300L
     }
 }

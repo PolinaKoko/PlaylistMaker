@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.domain.models
 
 import android.icu.text.SimpleDateFormat
 import java.io.Serializable

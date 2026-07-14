@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.ui.settings
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.presentation.App
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -28,6 +30,7 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             app.switchTheme(isChecked)
+            recreate()
         }
 
         val shareButton = findViewById<LinearLayout>(R.id.share_button)

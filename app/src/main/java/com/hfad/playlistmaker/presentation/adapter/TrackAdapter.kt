@@ -1,8 +1,11 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.domain.models.Track
+import com.hfad.playlistmaker.presentation.ui.search.TrackViewHolder
 
 class TrackAdapter(
     private val onItemClick: (Track) -> Unit
