@@ -1,13 +1,9 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 
 class App : Application() {
-    companion object {
-        const val PREFS_NAME = "playlist_maker_prefs"
-        const val THEME_KEY = "dark_theme"
-    }
 
     private var darkTheme = false
 
@@ -36,5 +32,10 @@ class App : Application() {
         sharedPrefs.edit()
             .putBoolean(THEME_KEY, darkThemeEnabled)
             .apply()
+    }
+
+    companion object {
+        const val PREFS_NAME = "playlist_maker_prefs"
+        const val THEME_KEY = "dark_theme"
     }
 }
