@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.hfad.playlistmaker.search.domain.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.TrackInteractor
 import com.hfad.playlistmaker.search.domain.models.Track
-import com.hfad.playlistmaker.util.Resource
 import com.hfad.playlistmaker.util.SingleLiveEvent
 
 class SearchViewModel(
@@ -19,8 +18,6 @@ class SearchViewModel(
     private val _state = MutableLiveData<SearchState>()
     val state: LiveData<SearchState> = _state
 
-    private val _history = MutableLiveData<List<Track>>()
-    val history: LiveData<List<Track>> = _history
 
     private val _navigateToPlayer = SingleLiveEvent<Track>()
     val navigateToPlayer: LiveData<Track> = _navigateToPlayer
@@ -32,9 +29,9 @@ class SearchViewModel(
 
 
     init {
-        loadHistory()
+        val history = searchHistoryInteractor.getHistory()
+        _state.value = SearchState.Content(emptyList(), history)
     }
-
 
     fun onQueryChanged(query: String) {
         if (query.isEmpty()) {
@@ -44,26 +41,34 @@ class SearchViewModel(
         searchDebounce(query)
     }
 
-
     fun onClearQuery() {
         handler.removeCallbacksAndMessages(null)
         clearState()
     }
 
-
     fun onTrackClicked(track: Track) {
         if (!clickDebounce()) return
         searchHistoryInteractor.addTrack(track)
-        loadHistory()
+
+        val currentState = _state.value
+        if (currentState is SearchState.Content) {
+            val history = searchHistoryInteractor.getHistory()
+            _state.postValue(currentState.copy(history = history))
+        } else {
+            _state.postValue(SearchState.Content(emptyList(), searchHistoryInteractor.getHistory()))
+        }
         _navigateToPlayer.value = track
     }
 
-
     fun onClearHistoryClicked() {
         searchHistoryInteractor.clearHistory()
-        _history.value = emptyList()
+        val currentState = _state.value
+        if (currentState is SearchState.Content) {
+            _state.postValue(currentState.copy(history = emptyList()))
+        } else {
+            _state.postValue(SearchState.Initial)
+        }
     }
-
 
     fun onRetryClicked() {
         if (lastQuery.isNotEmpty()) {
@@ -86,22 +91,24 @@ class SearchViewModel(
         lastQuery = query
         _state.value = SearchState.Loading
 
-        trackInteractor.searchTracks(query) { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val tracks = resource.data ?: emptyList()
+        trackInteractor.searchTracks(query) { result ->
+            result
+                .onSuccess { tracks ->
                     if (tracks.isEmpty()) {
                         _state.postValue(SearchState.Empty)
                     } else {
-                        _state.postValue(SearchState.Content(tracks))
+                        _state.postValue(
+                            SearchState.Content(
+                                tracks,
+                                searchHistoryInteractor.getHistory()
+                            )
+                        )
                     }
                 }
-
-                is Resource.Error -> {
-                    val message = resource.message ?: "Неизвестная ошибка"
+                .onFailure { exception ->
+                    val message = exception.message ?: "Неизвестная ошибка"
                     _state.postValue(SearchState.Error(message))
                 }
-            }
         }
     }
 
@@ -114,12 +121,9 @@ class SearchViewModel(
         return current
     }
 
-    fun loadHistory() {
-        _history.value = searchHistoryInteractor.getHistory()
-    }
-
-    private fun clearState() {
-        _state.value = SearchState.Initial
+    fun clearState() {
+        val history = searchHistoryInteractor.getHistory()
+        _state.value = SearchState.Content(emptyList(), history)
     }
 
     companion object {

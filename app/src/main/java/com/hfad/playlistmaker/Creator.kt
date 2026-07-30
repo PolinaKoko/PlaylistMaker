@@ -45,7 +45,22 @@ object Creator {
     }
 
     fun provideSharingInteractor(context: Context): SharingInteractor {
-        return SharingInteractorImpl(ExternalNavigator(context))
+        val shareLink = context.getString(R.string.share_app_message)
+        val shareTitle = context.getString(R.string.share_app)
+        val supportEmail = context.getString(R.string.email)
+        val supportSubject = context.getString(R.string.support_email_subject)
+        val supportBody = context.getString(R.string.support_email_body)
+        val termsLink = context.getString(R.string.terms_url)
+
+        val emailData = Triple(supportEmail, supportSubject, supportBody)
+
+        return SharingInteractorImpl(
+            navigator = ExternalNavigator(context),
+            shareLink = shareLink,
+            shareTitle = shareTitle,
+            supportEmailData = emailData,
+            termsLink = termsLink
+        )
     }
 
 }

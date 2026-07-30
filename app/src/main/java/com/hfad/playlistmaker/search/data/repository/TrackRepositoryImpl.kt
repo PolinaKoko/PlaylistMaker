@@ -4,17 +4,18 @@ package com.hfad.playlistmaker.search.data.repository
 import com.hfad.playlistmaker.search.data.network.RetrofitClient
 import com.hfad.playlistmaker.search.domain.TrackRepository
 import com.hfad.playlistmaker.search.domain.models.Track
-import com.hfad.playlistmaker.util.Resource
 import java.io.IOException
 
 class TrackRepositoryImpl : TrackRepository {
 
-    override fun searchTracks(query: String): Resource<List<Track>> {
+    override fun searchTracks(query: String): Result<List<Track>> {
         return try {
             val response = RetrofitClient.api.searchTracks(query).execute()
 
+
             if (response.isSuccessful) {
                 val body = response.body()
+
                 if (body != null && !body.results.isNullOrEmpty()) {
                     val tracks = body.results.map { dto ->
                         Track(
@@ -30,17 +31,17 @@ class TrackRepositoryImpl : TrackRepository {
                             previewUrl = dto.previewUrl
                         )
                     }
-                    Resource.Success(tracks)
+                    Result.success(tracks)
                 } else {
-                    Resource.Success(emptyList())
+                    Result.success(emptyList())
                 }
             } else {
-                Resource.Error("Ошибка сервера: ${response.code()}")
+                Result.failure(IOException("Ошибка сервера: ${response.code()}"))
             }
         } catch (e: IOException) {
-            Resource.Error("Проверьте подключение к интернету")
+            Result.failure(IOException("Проверьте подключение к интернету"))
         } catch (e: Exception) {
-            Resource.Error("Что-то пошло не так")
+            Result.failure(Exception("Что-то пошло не так"))
         }
     }
 }

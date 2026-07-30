@@ -2,11 +2,14 @@ package com.hfad.playlistmaker.player.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -15,9 +18,7 @@ import com.hfad.playlistmaker.search.domain.models.Track
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: PlayerViewModel
-    private lateinit var track: Track
-
+    private val viewModel: PlayerViewModel by viewModels()
 
     private lateinit var btnPlay: ImageButton
     private lateinit var tvCurrentTime: TextView
@@ -33,38 +34,37 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var tvCountry: TextView
     private lateinit var ivCoverArtwork: ImageView
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_audio_player)
 
-        track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("track", Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getSerializableExtra("track") as? Track
-        } ?: return
-
         initViews()
-        fillData()
+        setupObservers()
+        setupListeners()
 
-        viewModel.state.observe(this) { state ->
-            renderState(state)
+        if (savedInstanceState != null) {
+            viewModel.restoreState(savedInstanceState)
+        } else {
+            val track = getTrackFromIntent()
+            if (track == null) {
+                Toast.makeText(this, "Трек не найден", Toast.LENGTH_SHORT).show()
+                finish()
+                return
+            }
+            viewModel.setTrack(track)
         }
+    }
 
-        viewModel.currentTime.observe(this) { time ->
-            tvCurrentTime.text = time
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d("PlayerDebug", "onSaveInstanceState")
+        viewModel.saveState(outState)
+    }
 
-        viewModel.preparePlayer(track)
-
-        btnPlay.setOnClickListener {
-            viewModel.onPlayButtonClicked()
-        }
-
-        backButton.setOnClickListener {
-            finish()
-        }
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
     override fun onPause() {
@@ -72,8 +72,18 @@ class AudioPlayerActivity : AppCompatActivity() {
         viewModel.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStop()
+    }
+
+    private fun getTrackFromIntent(): Track? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("track", Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getSerializableExtra("track") as? Track
+        }
     }
 
     private fun initViews() {
@@ -92,12 +102,36 @@ class AudioPlayerActivity : AppCompatActivity() {
         ivCoverArtwork = findViewById(R.id.ivCoverArtwork)
     }
 
-    private fun fillData() {
-        tvTrackName.text = track.trackName
-        tvArtistName.text = track.artistName
+    private fun setupObservers() {
+        viewModel.state.observe(this) { state ->
+            renderState(state)
+        }
+        viewModel.currentTime.observe(this) { time ->
+            tvCurrentTime.text = time
+        }
+        viewModel.uiState.observe(this) { uiState ->
+            bindUiState(uiState)
+        }
+    }
 
-        if (!track.collectionName.isNullOrEmpty()) {
-            tvAlbumName.text = track.collectionName
+    private fun setupListeners() {
+        btnPlay.setOnClickListener {
+            viewModel.onPlayButtonClicked()
+        }
+        backButton.setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun bindUiState(uiState: PlayerUiState) {
+        tvTrackName.text = uiState.trackName
+        tvArtistName.text = uiState.artistName
+        tvDuration.text = uiState.duration
+        tvGenre.text = uiState.genre
+        tvCountry.text = uiState.country
+
+        if (uiState.showAlbum) {
+            tvAlbumName.text = uiState.albumName
             tvAlbumName.visibility = View.VISIBLE
             tvAlbumLabel.visibility = View.VISIBLE
         } else {
@@ -105,13 +139,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             tvAlbumLabel.visibility = View.GONE
         }
 
-        tvDuration.text = track.getTrackTime()
-
-        val releaseDate = track.releaseDate
-
-        if (!releaseDate.isNullOrEmpty() && releaseDate.length >= 4) {
-            val year = releaseDate.substring(0, 4)
-            tvYear.text = year
+        if (uiState.showYear) {
+            tvYear.text = uiState.year
             tvYear.visibility = View.VISIBLE
             tvYearLabel.visibility = View.VISIBLE
         } else {
@@ -119,14 +148,21 @@ class AudioPlayerActivity : AppCompatActivity() {
             tvYearLabel.visibility = View.GONE
         }
 
-        tvGenre.text = track.primaryGenreName ?: ""
-        tvCountry.text = track.country ?: ""
+        loadCover(uiState.coverUrl)
+    }
+
+    private fun loadCover(url: String) {
+        val cornerRadiusPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            8f,
+            resources.displayMetrics
+        ).toInt()
 
         Glide.with(this)
-            .load(track.getCoverArtwork())
+            .load(url)
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
-            .transform(RoundedCorners((8 * resources.displayMetrics.density).toInt()))
+            .transform(RoundedCorners(cornerRadiusPx))
             .into(ivCoverArtwork)
     }
 
@@ -136,27 +172,22 @@ class AudioPlayerActivity : AppCompatActivity() {
                 btnPlay.isEnabled = false
                 btnPlay.setImageResource(R.drawable.ic_play)
             }
-
             is PlayerState.Prepared -> {
                 btnPlay.isEnabled = true
                 btnPlay.setImageResource(R.drawable.ic_play)
             }
-
             is PlayerState.Playing -> {
                 btnPlay.isEnabled = true
                 btnPlay.setImageResource(R.drawable.ic_pause)
             }
-
             is PlayerState.Paused -> {
                 btnPlay.isEnabled = true
                 btnPlay.setImageResource(R.drawable.ic_play)
             }
-
             is PlayerState.Completed -> {
                 btnPlay.isEnabled = true
                 btnPlay.setImageResource(R.drawable.ic_play)
             }
-
             is PlayerState.Error -> {
                 btnPlay.isEnabled = false
                 btnPlay.setImageResource(R.drawable.ic_play)
@@ -164,6 +195,5 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
         }
     }
+
 }
-
-

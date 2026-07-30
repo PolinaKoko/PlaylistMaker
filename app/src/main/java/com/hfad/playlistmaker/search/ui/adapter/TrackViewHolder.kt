@@ -1,5 +1,6 @@
 package com.hfad.playlistmaker.search.ui.adapter
 
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,12 +23,18 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         tvArtistName.text = track.artistName
         tvTrackTime.text = track.getTrackTime()
 
+        val cornerRadiusPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            2f,
+            itemView.context.resources.displayMetrics
+        ).toInt()
+
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .centerCrop()
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(2)))
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(cornerRadiusPx)))
             .into(ivArtwork)
     }
 }

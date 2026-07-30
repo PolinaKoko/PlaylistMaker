@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -22,33 +21,34 @@ import com.hfad.playlistmaker.player.ui.AudioPlayerActivity
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 
 class SearchActivity : AppCompatActivity() {
-
     private lateinit var viewModel: SearchViewModel
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
-    // Views
+    private var lastState: SearchState? = null
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeholderEmpty: LinearLayout
     private lateinit var placeholderError: LinearLayout
     private lateinit var tvErrorMessage: TextView
-    private lateinit var retryButton: Button
     private lateinit var historyContainer: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
-    private lateinit var clearHistoryButton: Button
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
         initViewModel()
         initViews()
         setupAdapters()
         setupListeners()
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateHistoryVisibility(searchEditText.hasFocus())
     }
 
     private fun initViewModel() {
@@ -67,35 +67,22 @@ class SearchActivity : AppCompatActivity() {
         placeholderEmpty = findViewById(R.id.placeholderEmpty)
         placeholderError = findViewById(R.id.placeholderError)
         tvErrorMessage = findViewById(R.id.tvErrorMessage)
-        retryButton = findViewById(R.id.retryButton)
         historyContainer = findViewById(R.id.historyContainer)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
-        clearHistoryButton = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progressBar)
 
-        findViewById<ImageView>(R.id.back_button).setOnClickListener {
-            finish()
-        }
-
-        clearHistoryButton.setOnClickListener {
-            viewModel.onClearHistoryClicked()
-        }
-
-        retryButton.setOnClickListener {
-            viewModel.onRetryClicked()
-        }
+        findViewById<ImageView>(R.id.back_button).setOnClickListener { finish() }
+        findViewById<View>(R.id.clearHistoryButton).setOnClickListener { viewModel.onClearHistoryClicked() }
+        findViewById<View>(R.id.retryButton).setOnClickListener { viewModel.onRetryClicked() }
     }
 
+
     private fun setupAdapters() {
-        adapter = TrackAdapter { track ->
-            viewModel.onTrackClicked(track)
-        }
+        adapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        historyAdapter = TrackAdapter { track ->
-            viewModel.onTrackClicked(track)
-        }
+        historyAdapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyRecyclerView.adapter = historyAdapter
     }
@@ -107,8 +94,10 @@ class SearchActivity : AppCompatActivity() {
 
             if (query.isEmpty()) {
                 viewModel.onClearQuery()
+                updateHistoryVisibility(searchEditText.hasFocus())
             } else {
                 viewModel.onQueryChanged(query)
+                historyContainer.visibility = View.GONE
             }
         }
 
@@ -124,13 +113,13 @@ class SearchActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.state.observe(this) { state ->
+            lastState = state
+
             when (state) {
                 is SearchState.Initial -> {
-                    hideLoading()
-                    showResults(false)
-                    showError(false)
-                    showEmpty(false)
+                    hideAllContainers()
                     adapter.updateTracks(emptyList())
+                    updateHistoryVisibility(searchEditText.hasFocus())
                 }
 
                 is SearchState.Loading -> {
@@ -139,10 +128,15 @@ class SearchActivity : AppCompatActivity() {
 
                 is SearchState.Content -> {
                     hideLoading()
-                    showResults(true)
                     showError(false)
                     showEmpty(false)
+
+                    val hasTracks = state.tracks.isNotEmpty()
+                    showResults(hasTracks)
+
                     adapter.updateTracks(state.tracks)
+                    historyAdapter.updateTracks(state.history)
+                    updateHistoryVisibility(searchEditText.hasFocus())
                 }
 
                 is SearchState.Empty -> {
@@ -156,15 +150,10 @@ class SearchActivity : AppCompatActivity() {
                 is SearchState.Error -> {
                     hideLoading()
                     showResults(false)
-                    showError(true, state.message)
                     showEmpty(false)
+                    showError(true, state.message)
                 }
             }
-        }
-
-        viewModel.history.observe(this) { history ->
-            historyAdapter.updateTracks(history)
-            updateHistoryVisibility(searchEditText.hasFocus())
         }
 
         viewModel.navigateToPlayer.observe(this) { track ->
@@ -176,18 +165,22 @@ class SearchActivity : AppCompatActivity() {
 
     private fun updateHistoryVisibility(hasFocus: Boolean) {
         val query = searchEditText.text.toString()
-        viewModel.history.value?.let { history ->
-            val shouldShow = hasFocus && query.isEmpty() && history.isNotEmpty()
-            historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
-        }
+        val history = (lastState as? SearchState.Content)?.history ?: emptyList()
+
+        val shouldShow = hasFocus && query.isEmpty() && history.isNotEmpty()
+        historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
     }
 
-    private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
+    private fun hideAllContainers() {
+        progressBar.visibility = View.GONE
         recyclerView.visibility = View.GONE
         placeholderEmpty.visibility = View.GONE
         placeholderError.visibility = View.GONE
-        historyContainer.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        hideAllContainers()
+        progressBar.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
@@ -195,17 +188,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showResults(show: Boolean) {
-        recyclerView.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+            hideAllContainers()
+            recyclerView.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.GONE
+        }
     }
 
     private fun showEmpty(show: Boolean) {
-        placeholderEmpty.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+            hideAllContainers()
+            placeholderEmpty.visibility = View.VISIBLE
+        } else {
+            placeholderEmpty.visibility = View.GONE
+        }
     }
 
     private fun showError(show: Boolean, message: String = "") {
-        placeholderError.visibility = if (show) View.VISIBLE else View.GONE
-        if (show && message.isNotEmpty()) {
-            tvErrorMessage.text = message
+        if (show) {
+            hideAllContainers()
+            placeholderError.visibility = View.VISIBLE
+            if (message.isNotEmpty()) {
+                tvErrorMessage.text = message
+            }
+        } else {
+            placeholderError.visibility = View.GONE
         }
     }
 
