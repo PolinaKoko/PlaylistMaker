@@ -2,44 +2,29 @@ package com.hfad.playlistmaker.player.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.hfad.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private val viewModel: PlayerViewModel by viewModels()
+    private val viewModel: PlayerViewModel by viewModel()
 
-    private lateinit var btnPlay: ImageButton
-    private lateinit var tvCurrentTime: TextView
-    private lateinit var backButton: ImageButton
-    private lateinit var tvTrackName: TextView
-    private lateinit var tvArtistName: TextView
-    private lateinit var tvAlbumName: TextView
-    private lateinit var tvAlbumLabel: TextView
-    private lateinit var tvDuration: TextView
-    private lateinit var tvYear: TextView
-    private lateinit var tvYearLabel: TextView
-    private lateinit var tvGenre: TextView
-    private lateinit var tvCountry: TextView
-    private lateinit var ivCoverArtwork: ImageView
+    private lateinit var binding: ActivityAudioPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_audio_player)
+        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        initViews()
         setupObservers()
         setupListeners()
 
@@ -58,7 +43,6 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d("PlayerDebug", "onSaveInstanceState")
         viewModel.saveState(outState)
     }
 
@@ -86,28 +70,12 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViews() {
-        btnPlay = findViewById(R.id.btnPlay)
-        tvCurrentTime = findViewById(R.id.tvCurrentTime)
-        backButton = findViewById(R.id.backButton)
-        tvTrackName = findViewById(R.id.tvTrackName)
-        tvArtistName = findViewById(R.id.tvArtistName)
-        tvAlbumName = findViewById(R.id.tvAlbumName)
-        tvAlbumLabel = findViewById(R.id.tvAlbumLabel)
-        tvDuration = findViewById(R.id.tvDuration)
-        tvYear = findViewById(R.id.tvYear)
-        tvYearLabel = findViewById(R.id.tvYearLabel)
-        tvGenre = findViewById(R.id.tvGenre)
-        tvCountry = findViewById(R.id.tvCountry)
-        ivCoverArtwork = findViewById(R.id.ivCoverArtwork)
-    }
-
     private fun setupObservers() {
         viewModel.state.observe(this) { state ->
             renderState(state)
         }
         viewModel.currentTime.observe(this) { time ->
-            tvCurrentTime.text = time
+            binding.tvCurrentTime.text = time
         }
         viewModel.uiState.observe(this) { uiState ->
             bindUiState(uiState)
@@ -115,37 +83,37 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        btnPlay.setOnClickListener {
+        binding.btnPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
-        backButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             finish()
         }
     }
 
     private fun bindUiState(uiState: PlayerUiState) {
-        tvTrackName.text = uiState.trackName
-        tvArtistName.text = uiState.artistName
-        tvDuration.text = uiState.duration
-        tvGenre.text = uiState.genre
-        tvCountry.text = uiState.country
+        binding.tvTrackName.text = uiState.trackName
+        binding.tvArtistName.text = uiState.artistName
+        binding.tvDuration.text = uiState.duration
+        binding.tvGenre.text = uiState.genre
+        binding.tvCountry.text = uiState.country
 
         if (uiState.showAlbum) {
-            tvAlbumName.text = uiState.albumName
-            tvAlbumName.visibility = View.VISIBLE
-            tvAlbumLabel.visibility = View.VISIBLE
+            binding.tvAlbumName.text = uiState.albumName
+            binding.tvAlbumName.visibility = View.VISIBLE
+            binding.tvAlbumLabel.visibility = View.VISIBLE
         } else {
-            tvAlbumName.visibility = View.GONE
-            tvAlbumLabel.visibility = View.GONE
+            binding.tvAlbumName.visibility = View.GONE
+            binding.tvAlbumLabel.visibility = View.GONE
         }
 
         if (uiState.showYear) {
-            tvYear.text = uiState.year
-            tvYear.visibility = View.VISIBLE
-            tvYearLabel.visibility = View.VISIBLE
+            binding.tvYear.text = uiState.year
+            binding.tvYear.visibility = View.VISIBLE
+            binding.tvYearLabel.visibility = View.VISIBLE
         } else {
-            tvYear.visibility = View.GONE
-            tvYearLabel.visibility = View.GONE
+            binding.tvYear.visibility = View.GONE
+            binding.tvYearLabel.visibility = View.GONE
         }
 
         loadCover(uiState.coverUrl)
@@ -163,34 +131,39 @@ class AudioPlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
             .transform(RoundedCorners(cornerRadiusPx))
-            .into(ivCoverArtwork)
+            .into(binding.ivCoverArtwork)
     }
 
     private fun renderState(state: PlayerState) {
         when (state) {
             is PlayerState.Default -> {
-                btnPlay.isEnabled = false
-                btnPlay.setImageResource(R.drawable.ic_play)
+                binding.btnPlay.isEnabled = false
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
             }
+
             is PlayerState.Prepared -> {
-                btnPlay.isEnabled = true
-                btnPlay.setImageResource(R.drawable.ic_play)
+                binding.btnPlay.isEnabled = true
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
             }
+
             is PlayerState.Playing -> {
-                btnPlay.isEnabled = true
-                btnPlay.setImageResource(R.drawable.ic_pause)
+                binding.btnPlay.isEnabled = true
+                binding.btnPlay.setImageResource(R.drawable.ic_pause)
             }
+
             is PlayerState.Paused -> {
-                btnPlay.isEnabled = true
-                btnPlay.setImageResource(R.drawable.ic_play)
+                binding.btnPlay.isEnabled = true
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
             }
+
             is PlayerState.Completed -> {
-                btnPlay.isEnabled = true
-                btnPlay.setImageResource(R.drawable.ic_play)
+                binding.btnPlay.isEnabled = true
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
             }
+
             is PlayerState.Error -> {
-                btnPlay.isEnabled = false
-                btnPlay.setImageResource(R.drawable.ic_play)
+                binding.btnPlay.isEnabled = false
+                binding.btnPlay.setImageResource(R.drawable.ic_play)
                 Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
             }
         }

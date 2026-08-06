@@ -2,32 +2,33 @@ package com.hfad.playlistmaker.main.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.ActivityMainBinding
 import com.hfad.playlistmaker.player.ui.MediaActivity
 import com.hfad.playlistmaker.search.ui.SearchActivity
 import com.hfad.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_PlaylistMaker_Main)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setTheme(R.style.Theme_PlaylistMaker_Main)
 
-        val searchButton = findViewById<Button>(R.id.button_search)
-        val mediaButton = findViewById<Button>(R.id.button_media)
-        val settingButton = findViewById<Button>(R.id.button_setting)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        searchButton.setOnClickListener {
+        binding.buttonSearch.setOnClickListener {
             startActivity(Intent(this, SearchActivity::class.java))
         }
 
-        mediaButton.setOnClickListener {
+        binding.buttonMedia.setOnClickListener {
             startActivity(Intent(this, MediaActivity::class.java))
         }
 
-        settingButton.setOnClickListener {
+        binding.buttonSetting.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
     }

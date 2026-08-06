@@ -4,42 +4,28 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.hfad.playlistmaker.App
-import com.hfad.playlistmaker.Creator
-import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.ActivitySearchBinding
 import com.hfad.playlistmaker.player.ui.AudioPlayerActivity
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
+
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
     private var lastState: SearchState? = null
-    private lateinit var searchEditText: EditText
-    private lateinit var clearButton: ImageView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var placeholderEmpty: LinearLayout
-    private lateinit var placeholderError: LinearLayout
-    private lateinit var tvErrorMessage: TextView
-    private lateinit var historyContainer: LinearLayout
-    private lateinit var historyRecyclerView: RecyclerView
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        initViewModel()
+
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViews()
         setupAdapters()
         setupListeners()
@@ -48,65 +34,46 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateHistoryVisibility(searchEditText.hasFocus())
-    }
-
-    private fun initViewModel() {
-        val sharedPrefs = getSharedPreferences(App.PREFS_NAME, MODE_PRIVATE)
-        val factory = SearchViewModelFactory(
-            Creator.provideTrackInteractor(),
-            Creator.provideSearchHistoryInteractor(sharedPrefs)
-        )
-        viewModel = ViewModelProvider(this, factory)[SearchViewModel::class.java]
+        updateHistoryVisibility(binding.searchEditText.hasFocus())
     }
 
     private fun initViews() {
-        searchEditText = findViewById(R.id.search_edit_text)
-        clearButton = findViewById(R.id.clear_button)
-        recyclerView = findViewById(R.id.rvTracks)
-        placeholderEmpty = findViewById(R.id.placeholderEmpty)
-        placeholderError = findViewById(R.id.placeholderError)
-        tvErrorMessage = findViewById(R.id.tvErrorMessage)
-        historyContainer = findViewById(R.id.historyContainer)
-        historyRecyclerView = findViewById(R.id.historyRecyclerView)
-        progressBar = findViewById(R.id.progressBar)
-
-        findViewById<ImageView>(R.id.back_button).setOnClickListener { finish() }
-        findViewById<View>(R.id.clearHistoryButton).setOnClickListener { viewModel.onClearHistoryClicked() }
-        findViewById<View>(R.id.retryButton).setOnClickListener { viewModel.onRetryClicked() }
+        binding.backButton.setOnClickListener { finish() }
+        binding.clearHistoryButton.setOnClickListener { viewModel.onClearHistoryClicked() }
+        binding.retryButton.setOnClickListener { viewModel.onRetryClicked() }
     }
 
 
     private fun setupAdapters() {
         adapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        binding.rvTracks.layoutManager = LinearLayoutManager(this)
+        binding.rvTracks.adapter = adapter
 
         historyAdapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
-        historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        historyRecyclerView.adapter = historyAdapter
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.historyRecyclerView.adapter = historyAdapter
     }
 
     private fun setupListeners() {
-        searchEditText.doOnTextChanged { text, _, _, _ ->
+        binding.searchEditText.doOnTextChanged { text, _, _, _ ->
             val query = text?.toString().orEmpty()
-            clearButton.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
+            binding.clearButton.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
 
             if (query.isEmpty()) {
                 viewModel.onClearQuery()
-                updateHistoryVisibility(searchEditText.hasFocus())
+                updateHistoryVisibility(binding.searchEditText.hasFocus())
             } else {
                 viewModel.onQueryChanged(query)
-                historyContainer.visibility = View.GONE
+                binding.historyContainer.visibility = View.GONE
             }
         }
 
-        searchEditText.setOnFocusChangeListener { _, hasFocus ->
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
             updateHistoryVisibility(hasFocus)
         }
 
-        clearButton.setOnClickListener {
-            searchEditText.text.clear()
+        binding.clearButton.setOnClickListener {
+            binding.searchEditText.text.clear()
             hideKeyboard()
         }
     }
@@ -119,7 +86,7 @@ class SearchActivity : AppCompatActivity() {
                 is SearchState.Initial -> {
                     hideAllContainers()
                     adapter.updateTracks(emptyList())
-                    updateHistoryVisibility(searchEditText.hasFocus())
+                    updateHistoryVisibility(binding.searchEditText.hasFocus())
                 }
 
                 is SearchState.Loading -> {
@@ -136,7 +103,7 @@ class SearchActivity : AppCompatActivity() {
 
                     adapter.updateTracks(state.tracks)
                     historyAdapter.updateTracks(state.history)
-                    updateHistoryVisibility(searchEditText.hasFocus())
+                    updateHistoryVisibility(binding.searchEditText.hasFocus())
                 }
 
                 is SearchState.Empty -> {
@@ -164,61 +131,61 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun updateHistoryVisibility(hasFocus: Boolean) {
-        val query = searchEditText.text.toString()
+        val query = binding.searchEditText.text.toString()
         val history = (lastState as? SearchState.Content)?.history ?: emptyList()
 
         val shouldShow = hasFocus && query.isEmpty() && history.isNotEmpty()
-        historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
+        binding.historyContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
     }
 
     private fun hideAllContainers() {
-        progressBar.visibility = View.GONE
-        recyclerView.visibility = View.GONE
-        placeholderEmpty.visibility = View.GONE
-        placeholderError.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.rvTracks.visibility = View.GONE
+        binding.placeholderEmpty.visibility = View.GONE
+        binding.placeholderError.visibility = View.GONE
     }
 
     private fun showLoading() {
         hideAllContainers()
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun showResults(show: Boolean) {
         if (show) {
             hideAllContainers()
-            recyclerView.visibility = View.VISIBLE
+            binding.rvTracks.visibility = View.VISIBLE
         } else {
-            recyclerView.visibility = View.GONE
+            binding.rvTracks.visibility = View.GONE
         }
     }
 
     private fun showEmpty(show: Boolean) {
         if (show) {
             hideAllContainers()
-            placeholderEmpty.visibility = View.VISIBLE
+            binding.placeholderEmpty.visibility = View.VISIBLE
         } else {
-            placeholderEmpty.visibility = View.GONE
+            binding.placeholderEmpty.visibility = View.GONE
         }
     }
 
     private fun showError(show: Boolean, message: String = "") {
         if (show) {
             hideAllContainers()
-            placeholderError.visibility = View.VISIBLE
+            binding.placeholderError.visibility = View.VISIBLE
             if (message.isNotEmpty()) {
-                tvErrorMessage.text = message
+                binding.tvErrorMessage.text = message
             }
         } else {
-            placeholderError.visibility = View.GONE
+            binding.placeholderError.visibility = View.GONE
         }
     }
 
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+        imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
     }
 }

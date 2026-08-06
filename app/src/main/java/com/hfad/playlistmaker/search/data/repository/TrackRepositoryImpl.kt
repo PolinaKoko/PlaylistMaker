@@ -1,17 +1,16 @@
 package com.hfad.playlistmaker.search.data.repository
 
 
-import com.hfad.playlistmaker.search.data.network.RetrofitClient
+import com.hfad.playlistmaker.search.data.network.ITunesApi
 import com.hfad.playlistmaker.search.domain.TrackRepository
 import com.hfad.playlistmaker.search.domain.models.Track
 import java.io.IOException
 
-class TrackRepositoryImpl : TrackRepository {
+class TrackRepositoryImpl(private val api: ITunesApi) : TrackRepository {
 
     override fun searchTracks(query: String): Result<List<Track>> {
         return try {
-            val response = RetrofitClient.api.searchTracks(query).execute()
-
+            val response = api.searchTracks(query).execute()
 
             if (response.isSuccessful) {
                 val body = response.body()

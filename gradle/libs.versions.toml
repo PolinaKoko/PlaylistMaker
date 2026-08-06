@@ -1,9 +1,8 @@
 [versions]
 agp = "9.0.1"
 kotlin = "2.2.0"
-kotlinStdlib = "2.2.0"
 converterGson = "2.9.0"
-coreKtx = "1.18.0"  # ← Осталась одна версия
+coreKtx = "1.18.0"
 glide = "4.14.2"
 gson = "2.10"
 junit = "4.13.2"
@@ -13,6 +12,7 @@ appcompat = "1.7.1"
 material = "1.13.0"
 activity = "1.13.0"
 constraintlayout = "2.2.1"
+koin = "3.5.6"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -30,6 +30,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
