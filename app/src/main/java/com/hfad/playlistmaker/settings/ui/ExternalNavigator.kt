@@ -1,12 +1,12 @@
-package com.hfad.playlistmaker.sharing.data
+package com.hfad.playlistmaker.settings.ui
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import androidx.core.net.toUri
 import com.hfad.playlistmaker.sharing.domain.SharingNavigator
 
 class ExternalNavigator(
-    private val context: Context
+    private val activity: Activity
 ) : SharingNavigator {
 
     override fun shareLink(link: String, title: String) {
@@ -14,7 +14,7 @@ class ExternalNavigator(
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, link)
         }
-        context.startActivity(Intent.createChooser(intent, title))
+        activity.startActivity(Intent.createChooser(intent, title))
     }
 
     override fun openEmail(emailData: Triple<String, String, String>) {
@@ -25,11 +25,12 @@ class ExternalNavigator(
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, body)
         }
-        context.startActivity(intent)
+        activity.startActivity(intent)
     }
 
     override fun openLink(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-        context.startActivity(intent)
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+        }
+        activity.startActivity(intent)
     }
 }

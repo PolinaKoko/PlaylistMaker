@@ -2,11 +2,16 @@ package com.hfad.playlistmaker.player.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.ActivityMediaBinding
 
 class MediaActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMediaBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media)
+
+        binding = ActivityMediaBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }

@@ -1,5 +1,6 @@
 package com.hfad.playlistmaker.sharing.domain.impl
 
+
 import com.hfad.playlistmaker.sharing.domain.SharingInteractor
 import com.hfad.playlistmaker.sharing.domain.SharingNavigator
 
