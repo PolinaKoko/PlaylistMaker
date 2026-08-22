@@ -38,15 +38,15 @@ val dataModule = module {
         )
     }
 
-    single<SearchHistoryRepository> {
+    factory<SearchHistoryRepository> {
         SearchHistoryRepositoryImpl(get(), get())
     }
 
-    single<TrackRepository> {
+    factory<TrackRepository> {
         TrackRepositoryImpl(get())
     }
 
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         SettingsRepositoryImpl(get())
     }
 

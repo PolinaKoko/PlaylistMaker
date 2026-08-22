@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.ActivityMainBinding
-import com.hfad.playlistmaker.player.ui.MediaActivity
+import com.hfad.playlistmaker.media.ui.MediaActivity
 import com.hfad.playlistmaker.search.ui.SearchActivity
 import com.hfad.playlistmaker.settings.ui.SettingsActivity
 

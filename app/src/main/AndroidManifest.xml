@@ -34,8 +34,9 @@
             android:theme="@style/Theme.PlaylistMaker.Search" />
 
         <activity
-            android:name=".player.ui.MediaActivity"
-            android:exported="false" />
+            android:name=".media.ui.MediaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PlaylistMaker.Media" />
 
         <activity
             android:name=".player.ui.AudioPlayerActivity"
