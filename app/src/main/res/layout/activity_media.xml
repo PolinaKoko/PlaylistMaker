@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         app:tabTextColor="?attr/colorOnSurfaceVariant"
         app:tabSelectedTextColor="?attr/colorOnSurface"
+        app:tabIndicatorColor="?attr/colorOnSurface"
         app:tabIndicatorHeight="2dp"
         app:tabIndicator="@drawable/tab_indicator"
         app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
