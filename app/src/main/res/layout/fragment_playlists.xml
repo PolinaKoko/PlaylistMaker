@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/createPlaylistButton"
+        style="@style/PlaceholderButtonStyle"
+        android:text="@string/create_playlist"
+        android:layout_marginBottom="46dp" />
+
+    <ImageView
+        style="@style/PlaceholderIconStyle"
+        android:src="@drawable/ic_placeholder_empty" />
+
+    <TextView
+        style="@style/PlaceholderTitleStyle"
+        android:text="@string/empty_playlists" />
+
+</LinearLayout>

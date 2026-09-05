@@ -13,19 +13,19 @@ import org.koin.dsl.module
 
 val domainModule = module {
 
-    single<TrackInteractor> {
+    factory<TrackInteractor> {
         TrackInteractorImpl(get())
     }
 
-    single<SearchHistoryInteractor> {
+    factory<SearchHistoryInteractor> {
         SearchHistoryInteractorImpl(get())
     }
 
-    single<SettingsInteractor> {
+    factory<SettingsInteractor> {
         SettingsInteractorImpl(get())
     }
 
-    single<SharingInteractor> {
+    factory<SharingInteractor> {
         SharingInteractorImpl(
             get(),
             androidContext().getString(com.hfad.playlistmaker.R.string.share_app_message),
