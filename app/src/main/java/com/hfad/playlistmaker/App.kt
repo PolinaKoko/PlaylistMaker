@@ -13,6 +13,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        applyTheme()
+
         startKoin {
             androidContext(this@App)
             modules(
@@ -22,7 +24,6 @@ class App : Application() {
             )
         }
 
-        applyTheme()
     }
 
     fun applyTheme() {

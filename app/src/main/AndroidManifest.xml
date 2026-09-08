@@ -16,7 +16,8 @@
 
         <activity
             android:name=".main.ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing">
 
         <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,24 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".settings.ui.SettingsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".search.ui.SearchActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMaker.Search" />
-
-        <activity
-            android:name=".media.ui.MediaActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMaker.Media" />
-
-        <activity
-            android:name=".player.ui.AudioPlayerActivity"
-            android:exported="false"
-            android:theme="@style/Theme.PlaylistMaker.AudioPlayer" />
 
     </application>
 
