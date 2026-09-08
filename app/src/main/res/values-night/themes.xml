@@ -1,64 +1,29 @@
 <resources>
 
     <style name="Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorOnPrimary">@color/white</item>
 
         <item name="colorSurface">@color/black</item>
         <item name="colorOnSurface">@color/white</item>
 
-        <item name="colorSurfaceVariant">@color/light_gray</item>
-        <item name="colorOnSurfaceVariant">@color/white</item>
-
-        <item name="android:windowBackground">?attr/colorPrimary</item>
-        <item name="android:statusBarColor">@color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
-    <style name="Theme.PlaylistMaker.Main" parent="Theme.PlaylistMaker" />
-
-    <style name="Theme.PlaylistMaker.Settings" parent="Theme.PlaylistMaker">
-        <item name="android:windowBackground">?attr/colorSurface</item>
-        <item name="android:statusBarColor">@color/black</item>
-    </style>
-
-    <style name="Theme.PlaylistMaker.Search" parent="Theme.PlaylistMaker">
-        <item name="android:windowBackground">?attr/colorSurface</item>
-        <item name="android:statusBarColor">@color/black</item>
-
-
-        <item name="colorSurfaceVariant">@color/white</item>
-        <item name="colorOnSurfaceVariant">@color/black</item>
-
-        <item name="android:editTextColor">@color/black</item>
-
-    </style>
-
-    <style name="Theme.PlaylistMaker.TrackItem" parent="">
-        <item name="colorOnSurfaceVariant">@color/white</item>
-        <item name="colorOnSurface">@color/white</item>
-    </style>
-
-    <style name="Theme.PlaylistMaker.AudioPlayer" parent="Theme.PlaylistMaker">
-        <item name="android:windowBackground">?attr/colorSurface</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="colorOnSurfaceVariant">@color/gray</item>
-        <item name="android:statusBarColor">@color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
-    <style name="Theme.PlaylistMaker.Media" parent="Theme.PlaylistMaker">
-        <item name="android:windowBackground">?attr/colorSurface</item>
-        <item name="android:statusBarColor">@color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
-
         <item name="colorSurfaceVariant">@color/white</item>
         <item name="colorOnSurfaceVariant">@color/white</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorOnPrimary">@color/white</item>
-    </style>
 
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="searchFieldBackground">@color/white</item>
+        <item name="searchIconColor">@color/black</item>
+        <item name="searchHintColor">@color/black</item>
+
+        <item name="tabTextColorInactive">@color/white</item>
+        <item name="tabTextColorActive">@color/white</item>
+        <item name="tabIndicatorColor">@color/white</item>
+
+        <item name="bottomNavigationStyle">@style/BottomNavigationStyle</item>
+        <item name="elevationOverlayEnabled">false</item>
+
+    </style>
 </resources>

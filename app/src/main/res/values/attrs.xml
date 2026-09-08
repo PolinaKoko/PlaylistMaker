@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="searchFieldBackground" format="color" />
+    <attr name="searchIconColor" format="color" />
+    <attr name="searchHintColor" format="color" />
+    <attr name="clearIconColor" format="color" />
+
+    <attr name="tabTextColorInactive" format="color" />
+    <attr name="tabTextColorActive" format="color" />
+    <attr name="tabIndicatorColor" format="color" />
+
+</resources>

@@ -3,6 +3,7 @@
     <string name="search">Поиск</string>
     <string name="media">Медиатека</string>
     <string name="settings">Настройки</string>
+    <string name="player">Плеер</string>
 
     <string name="settings_title">Настройки</string>
     <string name="dark_theme">Темная тема</string>
