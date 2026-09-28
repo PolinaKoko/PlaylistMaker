@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -15,19 +14,10 @@
         android:paddingHorizontal="@dimen/padding_horizontal_main"
         android:paddingVertical="@dimen/padding_vertical_header">
 
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="?attr/colorOnSurface" />
-
         <TextView
             style="@style/SearchTitleStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_start_back_icon"
-            android:paddingStart="@dimen/margin_start_back_icon"
             android:text="@string/media" />
     </LinearLayout>
 
@@ -35,11 +25,12 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabTextColor="?attr/colorOnSurfaceVariant"
-        app:tabSelectedTextColor="?attr/colorOnSurface"
-        app:tabIndicatorColor="?attr/colorOnSurface"
+        android:background="@android:color/transparent"
+        app:tabTextColor="?attr/tabTextColorInactive"
+        app:tabSelectedTextColor="?attr/tabTextColorActive"
+        app:tabIndicatorColor="?attr/tabIndicatorColor"
         app:tabIndicatorHeight="2dp"
-        app:tabIndicator="@drawable/tab_indicator"
+        app:elevation="0dp"
         app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
         app:tabPaddingStart="0dp"
         app:tabPaddingEnd="0dp" />

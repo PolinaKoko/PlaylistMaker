@@ -1,13 +1,12 @@
 package com.hfad.playlistmaker.main.ui
 
-import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.ActivityMainBinding
-import com.hfad.playlistmaker.media.ui.MediaActivity
-import com.hfad.playlistmaker.search.ui.SearchActivity
-import com.hfad.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,21 +14,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_PlaylistMaker_Main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.buttonSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
-        }
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        binding.buttonMedia.setOnClickListener {
-            startActivity(Intent(this, MediaActivity::class.java))
-        }
+        binding.bottomNavigationView.setupWithNavController(navController)
 
-        binding.buttonSetting.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.audioPlayerFragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                    binding.bottomDivider.visibility = View.GONE
+                }
+
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.bottomDivider.visibility = View.VISIBLE
+                }
+            }
         }
     }
 }

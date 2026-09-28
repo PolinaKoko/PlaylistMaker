@@ -1,28 +1,34 @@
 package com.hfad.playlistmaker.media.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.databinding.ActivityMediaBinding
+import com.hfad.playlistmaker.databinding.FragmentMediaBinding
 
-class MediaActivity : AppCompatActivity() {
+class MediaFragment : Fragment() {
 
-    private lateinit var binding: ActivityMediaBinding
+    private var _binding: FragmentMediaBinding? = null
+    private val binding get() = _binding!!
     private lateinit var tabMediator: TabLayoutMediator
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentMediaBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding = ActivityMediaBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.backButton.setOnClickListener {
-            finish()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.viewPager.adapter = MediaPagerAdapter(
-            fragmentManager = supportFragmentManager,
+            fragmentManager = childFragmentManager,
             lifecycle = lifecycle
         )
 
@@ -41,15 +47,19 @@ class MediaActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(CURRENT_TAB_KEY, binding.viewPager.currentItem)
+        _binding?.let {
+            outState.putInt(CURRENT_TAB_KEY, binding.viewPager.currentItem)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         tabMediator.detach()
+        _binding = null
     }
 
     companion object {
         private const val CURRENT_TAB_KEY = "current_tab"
     }
 }
+

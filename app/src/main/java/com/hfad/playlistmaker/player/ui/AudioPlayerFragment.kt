@@ -1,29 +1,39 @@
 package com.hfad.playlistmaker.player.ui
 
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.hfad.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.hfad.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AudioPlayerActivity : AppCompatActivity() {
+class AudioPlayerFragment : Fragment() {
 
     private val viewModel: PlayerViewModel by viewModel()
 
-    private lateinit var binding: ActivityAudioPlayerBinding
+    private var _binding: FragmentAudioPlayerBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAudioPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
         setupListeners()
@@ -31,10 +41,10 @@ class AudioPlayerActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             viewModel.restoreState(savedInstanceState)
         } else {
-            val track = getTrackFromIntent()
+            val track = getTrackFromArguments()
             if (track == null) {
-                Toast.makeText(this, "Трек не найден", Toast.LENGTH_SHORT).show()
-                finish()
+                Toast.makeText(requireContext(), "Трек не найден", Toast.LENGTH_SHORT).show()
+                findNavController().navigateUp()
                 return
             }
             viewModel.setTrack(track)
@@ -61,23 +71,18 @@ class AudioPlayerActivity : AppCompatActivity() {
         viewModel.onStop()
     }
 
-    private fun getTrackFromIntent(): Track? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("track", Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getSerializableExtra("track") as? Track
-        }
+    private fun getTrackFromArguments(): Track? {
+        return arguments?.getSerializable(ARG_TRACK) as? Track
     }
 
     private fun setupObservers() {
-        viewModel.state.observe(this) { state ->
+        viewModel.state.observe(viewLifecycleOwner) { state ->
             renderState(state)
         }
-        viewModel.currentTime.observe(this) { time ->
+        viewModel.currentTime.observe(viewLifecycleOwner) { time ->
             binding.tvCurrentTime.text = time
         }
-        viewModel.uiState.observe(this) { uiState ->
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
             bindUiState(uiState)
         }
     }
@@ -87,7 +92,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             viewModel.onPlayButtonClicked()
         }
         binding.backButton.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
     }
 
@@ -126,7 +131,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             resources.displayMetrics
         ).toInt()
 
-        Glide.with(this)
+        Glide.with(requireContext())
             .load(url)
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
@@ -164,7 +169,17 @@ class AudioPlayerActivity : AppCompatActivity() {
             is PlayerState.Error -> {
                 binding.btnPlay.isEnabled = false
                 binding.btnPlay.setImageResource(R.drawable.ic_play)
-                Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    companion object {
+        private const val ARG_TRACK = "track"
+
+        fun newInstance(track: Track): AudioPlayerFragment {
+            return AudioPlayerFragment().apply {
+                arguments = bundleOf(ARG_TRACK to track)
             }
         }
     }
