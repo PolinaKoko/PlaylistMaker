@@ -3,6 +3,8 @@ package com.hfad.playlistmaker.di
 import android.content.Context
 import com.google.gson.Gson
 import com.hfad.playlistmaker.search.data.network.ITunesApi
+import com.hfad.playlistmaker.search.data.network.NetworkClient
+import com.hfad.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.hfad.playlistmaker.search.data.repository.SearchHistoryRepositoryImpl
 import com.hfad.playlistmaker.search.data.repository.TrackRepositoryImpl
 import com.hfad.playlistmaker.search.domain.SearchHistoryRepository
@@ -29,6 +31,10 @@ val dataModule = module {
 
     single<ITunesApi> {
         get<Retrofit>().create(ITunesApi::class.java)
+    }
+
+    single<NetworkClient> {
+        RetrofitNetworkClient(get(), androidContext())
     }
 
     single {

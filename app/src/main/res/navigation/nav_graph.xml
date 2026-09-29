@@ -32,6 +32,12 @@
         android:id="@+id/audioPlayerFragment"
         android:name="com.hfad.playlistmaker.player.ui.AudioPlayerFragment"
         android:label="@string/player"
-        tools:layout="@layout/fragment_audio_player" />
+        tools:layout="@layout/fragment_audio_player">
+
+        <argument
+            android:name="track"
+            app:argType="com.hfad.playlistmaker.search.domain.models.Track" />
+
+    </fragment>
 
 </navigation>
