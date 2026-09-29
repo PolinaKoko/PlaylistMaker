@@ -29,7 +29,7 @@ class MediaFragment : Fragment() {
 
         binding.viewPager.adapter = MediaPagerAdapter(
             fragmentManager = childFragmentManager,
-            lifecycle = lifecycle
+            lifecycle = viewLifecycleOwner.lifecycle
         )
 
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
