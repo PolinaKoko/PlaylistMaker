@@ -2,13 +2,15 @@ package com.hfad.playlistmaker.player.ui
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.util.TimeFormatter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel : ViewModel() {
 
@@ -27,15 +29,7 @@ class PlayerViewModel : ViewModel() {
     private var pendingPosition: Long = 0L
     private var pendingPlayAfterPrepared: Boolean = false
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val timerRunnable = object : Runnable {
-        override fun run() {
-            if (_state.value == PlayerState.Playing) {
-                updateTimer()
-                handler.postDelayed(this, TIMER_UPDATE_DELAY)
-            }
-        }
-    }
+    private var timerJob: Job? = null
 
 
     fun saveState(outState: Bundle) {
@@ -244,12 +238,18 @@ class PlayerViewModel : ViewModel() {
     }
 
     private fun startTimer() {
-        handler.removeCallbacks(timerRunnable)
-        handler.post(timerRunnable)
+        stopTimer()
+        timerJob = viewModelScope.launch {
+            while (_state.value == PlayerState.Playing) {
+                delay(TIMER_UPDATE_DELAY)
+                updateTimer()
+            }
+        }
     }
 
     private fun stopTimer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
+        timerJob = null
     }
 
     private fun updateTimer() {
@@ -265,7 +265,6 @@ class PlayerViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         stopTimer()
-        handler.removeCallbacksAndMessages(null)
         mediaPlayer?.release()
         mediaPlayer = null
     }

@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.FragmentSearchBinding
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -138,8 +136,9 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.navigateToPlayer.observe(viewLifecycleOwner) { track ->
-            val bundle = bundleOf("track" to track)
-            findNavController().navigate(R.id.action_search_to_player, bundle)
+            findNavController().navigate(
+                SearchFragmentDirections.actionSearchToPlayer(track)
+            )
         }
     }
 

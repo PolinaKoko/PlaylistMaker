@@ -1,14 +1,16 @@
 package com.hfad.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hfad.playlistmaker.search.domain.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.TrackInteractor
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.util.SingleLiveEvent
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
@@ -22,10 +24,10 @@ class SearchViewModel(
     private val _navigateToPlayer = SingleLiveEvent<Track>()
     val navigateToPlayer: LiveData<Track> = _navigateToPlayer
 
-    private val handler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
+    private var searchJob: Job? = null
+    private var searchRequestJob: Job? = null
+    private var clickJob: Job? = null
     private var lastQuery = ""
-    private var isClickAllowed = true
 
 
     init {
@@ -42,7 +44,7 @@ class SearchViewModel(
     }
 
     fun onClearQuery() {
-        handler.removeCallbacksAndMessages(null)
+        searchJob?.cancel()
         clearState()
     }
 
@@ -78,47 +80,54 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacksAndMessages(null)
+        searchJob?.cancel()
+        searchRequestJob?.cancel()
+        clickJob?.cancel()
     }
 
     private fun searchDebounce(query: String) {
-        searchRunnable?.let { handler.removeCallbacks(it) }
-        searchRunnable = Runnable { performSearch(query) }
-        handler.postDelayed(searchRunnable!!, SEARCH_DEBOUNCE_DELAY)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            performSearch(query)
+        }
     }
 
     private fun performSearch(query: String) {
         lastQuery = query
         _state.value = SearchState.Loading
 
-        trackInteractor.searchTracks(query) { result ->
-            result
-                .onSuccess { tracks ->
-                    if (tracks.isEmpty()) {
-                        _state.postValue(SearchState.Empty)
-                    } else {
-                        _state.postValue(
-                            SearchState.Content(
-                                tracks,
-                                searchHistoryInteractor.getHistory()
-                            )
-                        )
-                    }
-                }
-                .onFailure { exception ->
-                    val message = exception.message ?: "Неизвестная ошибка"
-                    _state.postValue(SearchState.Error(message))
+        searchRequestJob?.cancel()
+        searchRequestJob = viewModelScope.launch {
+            trackInteractor.searchTracks(query)
+                .collect { result ->
+                    result
+                        .onSuccess { tracks ->
+                            if (tracks.isEmpty()) {
+                                _state.postValue(SearchState.Empty)
+                            } else {
+                                _state.postValue(
+                                    SearchState.Content(
+                                        tracks,
+                                        searchHistoryInteractor.getHistory()
+                                    )
+                                )
+                            }
+                        }
+                        .onFailure { exception ->
+                            val message = exception.message ?: "Неизвестная ошибка"
+                            _state.postValue(SearchState.Error(message))
+                        }
                 }
         }
     }
 
     private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        if (clickJob?.isActive == true) return false
+        clickJob = viewModelScope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
         }
-        return current
+        return true
     }
 
     fun clearState() {

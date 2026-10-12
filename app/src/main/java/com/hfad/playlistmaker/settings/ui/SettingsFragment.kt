@@ -8,13 +8,10 @@ import androidx.fragment.app.Fragment
 import com.hfad.playlistmaker.App
 import com.hfad.playlistmaker.databinding.FragmentSettingsBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class SettingsFragment : Fragment() {
 
-    private val viewModel: SettingsViewModel by viewModel {
-        parametersOf(requireContext())
-    }
+    private val viewModel: SettingsViewModel by viewModel()
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!

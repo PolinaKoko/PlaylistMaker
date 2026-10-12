@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.FragmentAudioPlayerBinding
-import com.hfad.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AudioPlayerFragment : Fragment() {
@@ -41,12 +39,7 @@ class AudioPlayerFragment : Fragment() {
         if (savedInstanceState != null) {
             viewModel.restoreState(savedInstanceState)
         } else {
-            val track = getTrackFromArguments()
-            if (track == null) {
-                Toast.makeText(requireContext(), "Трек не найден", Toast.LENGTH_SHORT).show()
-                findNavController().navigateUp()
-                return
-            }
+            val track = AudioPlayerFragmentArgs.fromBundle(requireArguments()).track
             viewModel.setTrack(track)
         }
     }
@@ -69,10 +62,6 @@ class AudioPlayerFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         viewModel.onStop()
-    }
-
-    private fun getTrackFromArguments(): Track? {
-        return arguments?.getSerializable(ARG_TRACK) as? Track
     }
 
     private fun setupObservers() {
@@ -174,14 +163,5 @@ class AudioPlayerFragment : Fragment() {
         }
     }
 
-    companion object {
-        private const val ARG_TRACK = "track"
-
-        fun newInstance(track: Track): AudioPlayerFragment {
-            return AudioPlayerFragment().apply {
-                arguments = bundleOf(ARG_TRACK to track)
-            }
-        }
-    }
 
 }

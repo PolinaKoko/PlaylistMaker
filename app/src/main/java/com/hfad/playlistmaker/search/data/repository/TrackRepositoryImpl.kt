@@ -1,22 +1,25 @@
 package com.hfad.playlistmaker.search.data.repository
 
 
-import com.hfad.playlistmaker.search.data.network.ITunesApi
+import com.hfad.playlistmaker.search.data.dto.TrackResponseDto
+import com.hfad.playlistmaker.search.data.dto.TrackSearchRequest
+import com.hfad.playlistmaker.search.data.network.NetworkClient
 import com.hfad.playlistmaker.search.domain.TrackRepository
 import com.hfad.playlistmaker.search.domain.models.Track
-import java.io.IOException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class TrackRepositoryImpl(private val api: ITunesApi) : TrackRepository {
+class TrackRepositoryImpl(
+    private val networkClient: NetworkClient
+) : TrackRepository {
 
-    override fun searchTracks(query: String): Result<List<Track>> {
-        return try {
-            val response = api.searchTracks(query).execute()
-
-            if (response.isSuccessful) {
-                val body = response.body()
-
-                if (body != null && !body.results.isNullOrEmpty()) {
-                    val tracks = body.results.map { dto ->
+    override fun searchTracks(query: String): Flow<Result<List<Track>>> = flow {
+        val response = networkClient.doRequest(TrackSearchRequest(query))
+        when (response.resultCode) {
+            -1 -> emit(Result.failure(Exception("Проверьте подключение к интернету")))
+            200 -> {
+                with(response as TrackResponseDto) {
+                    val tracks = results.map { dto ->
                         Track(
                             trackId = dto.trackId,
                             trackName = dto.trackName,
@@ -30,17 +33,14 @@ class TrackRepositoryImpl(private val api: ITunesApi) : TrackRepository {
                             previewUrl = dto.previewUrl
                         )
                     }
-                    Result.success(tracks)
-                } else {
-                    Result.success(emptyList())
+                    emit(Result.success(tracks))
                 }
-            } else {
-                Result.failure(IOException("Ошибка сервера: ${response.code()}"))
             }
-        } catch (e: IOException) {
-            Result.failure(IOException("Проверьте подключение к интернету"))
-        } catch (e: Exception) {
-            Result.failure(Exception("Что-то пошло не так"))
+
+            400 -> emit(Result.failure(Exception("Некорректный запрос")))
+            500 -> emit(Result.failure(Exception("Ошибка сервера")))
+            else -> emit(Result.failure(Exception("Что-то пошло не так")))
+
         }
     }
 }
