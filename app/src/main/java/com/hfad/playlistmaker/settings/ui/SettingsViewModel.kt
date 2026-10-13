@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.hfad.playlistmaker.settings.domain.SettingsInteractor
 import com.hfad.playlistmaker.settings.domain.model.ThemeSettings
 import com.hfad.playlistmaker.sharing.domain.SharingInteractor
+import com.hfad.playlistmaker.sharing.domain.SharingNavigator
 
 class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,
@@ -35,5 +36,9 @@ class SettingsViewModel(
 
     fun openTerms() {
         sharingInteractor.openTerms()
+    }
+
+    fun setSharingNavigator(navigator: SharingNavigator) {
+        sharingInteractor.setNavigator(navigator)
     }
 }

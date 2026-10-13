@@ -6,14 +6,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hfad.playlistmaker.search.domain.models.Track
+import com.hfad.playlistmaker.core.domain.models.Track
+import com.hfad.playlistmaker.media.domain.db.FavoritesInteractor
 import com.hfad.playlistmaker.util.TimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val favoritesInteractor: FavoritesInteractor
+) : ViewModel() {
 
+    private val _isFavorite = MutableLiveData<Boolean>(false)
+    val isFavorite: LiveData<Boolean> = _isFavorite
     private val _state = MutableLiveData<PlayerState>(PlayerState.Default)
     val state: LiveData<PlayerState> = _state
 
@@ -113,6 +118,7 @@ class PlayerViewModel : ViewModel() {
     fun setTrack(track: Track, position: Long = 0L, state: String = "Default") {
         currentTrack = track
         pendingPosition = position
+        checkFavorite(track)
         updateUiState(track)
 
         if (mediaPlayer != null && _state.value !is PlayerState.Error) {
@@ -141,6 +147,24 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+        android.util.Log.d(
+            "PlayerViewModel",
+            "onFavoriteClicked: trackId=${track.trackId}, isFavorite=${track.isFavorite}"
+        )
+        viewModelScope.launch {
+            if (track.isFavorite) {
+                favoritesInteractor.removeTrack(track)
+            } else {
+                favoritesInteractor.addTrack(track)
+            }
+            track.isFavorite = !track.isFavorite
+            _isFavorite.value = track.isFavorite
+            android.util.Log.d("PlayerViewModel", "after: isFavorite=${track.isFavorite}")
+        }
+    }
+
     private fun updateUiState(track: Track) {
         _uiState.value = PlayerUiState(
             trackName = track.trackName,
@@ -156,6 +180,14 @@ class PlayerViewModel : ViewModel() {
         )
     }
 
+    private fun checkFavorite(track: Track) {
+        viewModelScope.launch {
+            val favoriteIds = favoritesInteractor.getFavoriteIds()
+            val isFav = favoriteIds.contains(track.trackId)
+            track.isFavorite = isFav
+            _isFavorite.value = isFav
+        }
+    }
     private fun preparePlayer(track: Track) {
         val url = track.previewUrl
         if (url.isNullOrEmpty()) {
@@ -172,7 +204,7 @@ class PlayerViewModel : ViewModel() {
                         try {
                             seekTo(pendingPosition.toInt())
                             _currentTime.value = TimeFormatter.formatTime(pendingPosition)
-                        } catch (e: Exception) { /* ignore */
+                        } catch (e: Exception) {
                         }
                     }
                     _state.value = PlayerState.Prepared

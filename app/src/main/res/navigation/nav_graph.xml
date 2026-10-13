@@ -20,7 +20,12 @@
         android:id="@+id/mediaFragment"
         android:name="com.hfad.playlistmaker.media.ui.MediaFragment"
         android:label="@string/media"
-        tools:layout="@layout/fragment_media" />
+        tools:layout="@layout/fragment_media">
+
+        <action
+            android:id="@+id/action_media_to_player"
+            app:destination="@id/audioPlayerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingFragment"
@@ -36,7 +41,7 @@
 
         <argument
             android:name="track"
-            app:argType="com.hfad.playlistmaker.search.domain.models.Track" />
+            app:argType="com.hfad.playlistmaker.core.domain.models.Track" />
 
     </fragment>
 

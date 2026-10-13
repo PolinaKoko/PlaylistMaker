@@ -1,6 +1,6 @@
 package com.hfad.playlistmaker.search.domain
 
-import com.hfad.playlistmaker.search.domain.models.Track
+import com.hfad.playlistmaker.core.domain.models.Track
 
 interface SearchHistoryInteractor {
     fun getHistory(): List<Track>

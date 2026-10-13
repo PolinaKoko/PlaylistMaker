@@ -74,6 +74,12 @@ class AudioPlayerFragment : Fragment() {
         viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
             bindUiState(uiState)
         }
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFav ->
+            binding.btnFavorite.setImageResource(
+                if (isFav) R.drawable.ic_favorite_filled
+                else R.drawable.ic_favorite
+            )
+        }
     }
 
     private fun setupListeners() {
@@ -82,6 +88,9 @@ class AudioPlayerFragment : Fragment() {
         }
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
+        }
+        binding.btnFavorite.setOnClickListener {
+            viewModel.onFavoriteClicked()
         }
     }
 

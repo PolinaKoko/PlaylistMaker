@@ -1,6 +1,6 @@
 package com.hfad.playlistmaker.search.ui
 
-import com.hfad.playlistmaker.search.domain.models.Track
+import com.hfad.playlistmaker.core.domain.models.Track
 
 sealed interface SearchState {
     object Initial : SearchState

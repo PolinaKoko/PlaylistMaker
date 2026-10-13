@@ -1,7 +1,12 @@
 package com.hfad.playlistmaker.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
+import com.hfad.playlistmaker.media.data.db.AppDatabase
+import com.hfad.playlistmaker.media.data.db.converters.TrackDbConvertor
+import com.hfad.playlistmaker.media.data.repository.FavoritesRepositoryImpl
+import com.hfad.playlistmaker.media.domain.db.FavoritesRepository
 import com.hfad.playlistmaker.search.data.network.ITunesApi
 import com.hfad.playlistmaker.search.data.network.NetworkClient
 import com.hfad.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -11,8 +16,6 @@ import com.hfad.playlistmaker.search.domain.SearchHistoryRepository
 import com.hfad.playlistmaker.search.domain.TrackRepository
 import com.hfad.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.hfad.playlistmaker.settings.domain.SettingsRepository
-import com.hfad.playlistmaker.settings.ui.ExternalNavigator
-import com.hfad.playlistmaker.sharing.domain.SharingNavigator
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -44,19 +47,27 @@ val dataModule = module {
         )
     }
 
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
+    }
+
+    factory { TrackDbConvertor() }
+
+    factory<FavoritesRepository> {
+        FavoritesRepositoryImpl(get(), get())
+    }
+
     factory<SearchHistoryRepository> {
         SearchHistoryRepositoryImpl(get(), get())
     }
 
     factory<TrackRepository> {
-        TrackRepositoryImpl(get())
+        TrackRepositoryImpl(get(), get())
     }
 
     factory<SettingsRepository> {
         SettingsRepositoryImpl(get())
     }
 
-    factory<SharingNavigator> {
-        ExternalNavigator(get())
-    }
 }
