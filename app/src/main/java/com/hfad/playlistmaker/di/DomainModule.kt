@@ -1,5 +1,7 @@
 package com.hfad.playlistmaker.di
 
+import com.hfad.playlistmaker.media.domain.db.FavoritesInteractor
+import com.hfad.playlistmaker.media.domain.impl.FavoritesInteractorImpl
 import com.hfad.playlistmaker.search.domain.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.TrackInteractor
 import com.hfad.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
@@ -12,6 +14,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val domainModule = module {
+
+    factory<FavoritesInteractor> {
+        FavoritesInteractorImpl(get())
+    }
 
     factory<TrackInteractor> {
         TrackInteractorImpl(get())
@@ -27,7 +33,6 @@ val domainModule = module {
 
     factory<SharingInteractor> {
         SharingInteractorImpl(
-            get(),
             androidContext().getString(com.hfad.playlistmaker.R.string.share_app_message),
             androidContext().getString(com.hfad.playlistmaker.R.string.share_app),
             Triple(

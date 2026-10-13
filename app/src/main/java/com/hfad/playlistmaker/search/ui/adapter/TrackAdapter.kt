@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.search.domain.models.Track
+import com.hfad.playlistmaker.core.domain.models.Track
 
 
 class TrackAdapter(

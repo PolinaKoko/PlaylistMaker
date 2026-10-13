@@ -4,4 +4,6 @@ interface SharingInteractor {
     fun shareApp()
     fun openSupport()
     fun openTerms()
+
+    fun setNavigator(navigator: SharingNavigator)
 }
