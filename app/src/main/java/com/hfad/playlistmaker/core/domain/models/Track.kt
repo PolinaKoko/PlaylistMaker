@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.search.domain.models
+package com.hfad.playlistmaker.core.domain.models
 
 import com.hfad.playlistmaker.util.TimeFormatter
 import java.io.Serializable
@@ -16,6 +16,7 @@ data class Track(
     val previewUrl: String? = null
 ) : Serializable {
 
+    var isFavorite: Boolean = false
     fun getTrackTime(): String {
         return TimeFormatter.formatTime(trackTimeMillis)
     }

@@ -1,8 +1,8 @@
 package com.hfad.playlistmaker.search.domain.impl
 
+import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.search.domain.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.SearchHistoryRepository
-import com.hfad.playlistmaker.search.domain.models.Track
 
 class SearchHistoryInteractorImpl(
     private val repository: SearchHistoryRepository

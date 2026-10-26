@@ -1,8 +1,8 @@
 package com.hfad.playlistmaker.search.domain.impl
 
+import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.search.domain.TrackInteractor
 import com.hfad.playlistmaker.search.domain.TrackRepository
-import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 

@@ -29,6 +29,9 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val navigator = ExternalNavigator(requireActivity())
+        viewModel.setSharingNavigator(navigator)
+
         viewModel.themeState.observe(viewLifecycleOwner) { settings ->
             binding.themeSwitch.isChecked = settings.isDarkTheme
         }

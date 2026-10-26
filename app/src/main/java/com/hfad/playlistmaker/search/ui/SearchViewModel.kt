@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.search.domain.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.TrackInteractor
-import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.util.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

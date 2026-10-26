@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:paddingTop="106dp">
+    android:layout_height="match_parent">
 
-    <ImageView
-        style="@style/PlaceholderIconStyle"
-        android:src="@drawable/ic_placeholder_empty" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFavorites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingHorizontal="12dp"
+        android:visibility="gone" />
 
-    <TextView
-        style="@style/PlaceholderTitleStyle"
-        android:text="@string/empty_favorites" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blue"
+        android:visibility="gone" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/placeholderEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            style="@style/PlaceholderIconStyle"
+            android:layout_marginTop="106dp"
+            android:src="@drawable/ic_placeholder_empty" />
+
+        <TextView
+            style="@style/PlaceholderTitleStyle"
+            android:text="@string/empty_favorites" />
+
+    </LinearLayout>
+
+</FrameLayout>

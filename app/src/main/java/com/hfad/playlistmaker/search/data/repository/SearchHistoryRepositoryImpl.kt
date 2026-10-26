@@ -3,9 +3,8 @@ package com.hfad.playlistmaker.search.data.repository
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-
+import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.search.domain.SearchHistoryRepository
-import com.hfad.playlistmaker.search.domain.models.Track
 
 class SearchHistoryRepositoryImpl(
     private val sharedPreferences: SharedPreferences,

@@ -5,8 +5,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.hfad.playlistmaker.search.data.dto.Response
 import com.hfad.playlistmaker.search.data.dto.TrackSearchRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient(
     private val api: ITunesApi,
@@ -22,15 +20,14 @@ class RetrofitNetworkClient(
             return Response().apply { resultCode = 400 }
         }
 
-        return withContext(Dispatchers.IO) {
-            try {
+        return try {
                 val response = api.searchTracks(dto.query)
                 response.apply { resultCode = 200 }
             } catch (e: Throwable) {
                 Response().apply { resultCode = 500 }
             }
         }
-    }
+
 
     private fun isConnected(): Boolean {
         val connectivityManager = context.getSystemService(
