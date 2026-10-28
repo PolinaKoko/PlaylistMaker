@@ -25,6 +25,10 @@
         <action
             android:id="@+id/action_media_to_player"
             app:destination="@id/audioPlayerFragment" />
+
+        <action
+            android:id="@+id/action_media_to_createPlaylist"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
 
     <fragment
@@ -43,6 +47,15 @@
             android:name="track"
             app:argType="com.hfad.playlistmaker.core.domain.models.Track" />
 
+        <action
+            android:id="@+id/action_audioPlayer_to_createPlaylist"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.hfad.playlistmaker.media.ui.createplaylist.CreatePlaylistFragment"
+        android:label="@string/create_playlist"
+        tools:layout="@layout/fragment_create_playlist" />
 
 </navigation>

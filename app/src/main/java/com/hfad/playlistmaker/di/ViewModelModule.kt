@@ -1,5 +1,6 @@
 package com.hfad.playlistmaker.di
 
+import com.hfad.playlistmaker.media.ui.createplaylist.CreatePlaylistViewModel
 import com.hfad.playlistmaker.media.ui.favorites.FavoritesViewModel
 import com.hfad.playlistmaker.media.ui.playlists.PlaylistsViewModel
 import com.hfad.playlistmaker.player.ui.PlayerViewModel
@@ -25,7 +26,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        PlayerViewModel(get())
+        PlayerViewModel(get(), get())
     }
 
     viewModel {
@@ -33,7 +34,11 @@ val viewModelModule = module {
     }
 
     viewModel {
-        PlaylistsViewModel()
+        CreatePlaylistViewModel(get())
+    }
+
+    viewModel {
+        PlaylistsViewModel(get())
     }
 
 }

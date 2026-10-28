@@ -2,7 +2,6 @@ package com.hfad.playlistmaker.search.data.repository
 
 
 import com.hfad.playlistmaker.core.domain.models.Track
-import com.hfad.playlistmaker.media.data.db.AppDatabase
 import com.hfad.playlistmaker.search.data.dto.TrackResponseDto
 import com.hfad.playlistmaker.search.data.dto.TrackSearchRequest
 import com.hfad.playlistmaker.search.data.network.NetworkClient
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.flow
 
 class TrackRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val appDatabase: AppDatabase,
 ) : TrackRepository {
 
     override fun searchTracks(query: String): Flow<Result<List<Track>>> = flow {
@@ -21,7 +19,6 @@ class TrackRepositoryImpl(
             -1 -> emit(Result.failure(Exception("Проверьте подключение к интернету")))
             200 -> {
                 with(response as TrackResponseDto) {
-                    val favoriteIds = appDatabase.favoriteDao().getFavoriteIds()
                     val tracks = results.map { dto ->
                         Track(
                             trackId = dto.trackId,
@@ -35,9 +32,7 @@ class TrackRepositoryImpl(
                             country = dto.country,
                             previewUrl = dto.previewUrl
                         )
-                            .apply {
-                                isFavorite = favoriteIds.contains(trackId)
-                            }
+
                     }
                     emit(Result.success(tracks))
                 }

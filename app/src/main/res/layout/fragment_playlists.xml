@@ -2,21 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <Button
         android:id="@+id/createPlaylistButton"
         style="@style/PlaceholderButtonStyle"
-        android:text="@string/create_playlist"
-        android:layout_marginBottom="46dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/create_playlist" />
 
-    <ImageView
-        style="@style/PlaceholderIconStyle"
-        android:src="@drawable/ic_placeholder_empty" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <TextView
-        style="@style/PlaceholderTitleStyle"
-        android:text="@string/empty_playlists" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlistsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="8dp"
+            android:clipToPadding="false"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/placeholderEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                style="@style/PlaceholderIconStyle"
+                android:layout_marginTop="46dp"
+                android:src="@drawable/ic_placeholder_empty" />
+
+            <TextView
+                style="@style/PlaceholderTitleStyle"
+                android:text="@string/empty_playlists" />
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

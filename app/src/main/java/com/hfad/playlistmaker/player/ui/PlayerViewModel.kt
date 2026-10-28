@@ -6,15 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.playlistmaker.core.domain.models.Playlist
 import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.media.domain.db.FavoritesInteractor
+import com.hfad.playlistmaker.media.domain.db.PlaylistInteractor
 import com.hfad.playlistmaker.util.TimeFormatter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private val _isFavorite = MutableLiveData<Boolean>(false)
@@ -36,6 +39,45 @@ class PlayerViewModel(
 
     private var timerJob: Job? = null
 
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
+
+    private val _addToPlaylistStatus = MutableLiveData<AddToPlaylistStatus?>()
+    val addToPlaylistStatus: LiveData<AddToPlaylistStatus?> = _addToPlaylistStatus
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        val track = currentTrack ?: return
+
+        if (playlist.trackIds.contains(track.trackId)) {
+            _addToPlaylistStatus.value = AddToPlaylistStatus.AlreadyExists(playlist.name)
+            return
+        }
+        viewModelScope.launch {
+            val success = playlistInteractor.addTrackPlaylist(playlist, track)
+            if (success) {
+                _addToPlaylistStatus.value = AddToPlaylistStatus.Added(playlist.name)
+            } else {
+                _addToPlaylistStatus.value = AddToPlaylistStatus.AlreadyExists(playlist.name)
+            }
+
+        }
+    }
+
+    fun clearAddToPlaylistStatus() {
+        _addToPlaylistStatus.value = null
+    }
+
+    init {
+        loadPlaylists()
+    }
+
+    private fun loadPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists().collect { list ->
+                _playlists.value = list
+            }
+        }
+    }
 
     fun saveState(outState: Bundle) {
         outState.putLong(KEY_POSITION, getCurrentPosition())
