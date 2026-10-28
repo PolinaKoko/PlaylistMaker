@@ -55,12 +55,13 @@
             android:src="@drawable/ic_add_photo"
             app:tint="@color/gray" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/coverImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/RoundedImageStyle" />
     </FrameLayout>
 
 

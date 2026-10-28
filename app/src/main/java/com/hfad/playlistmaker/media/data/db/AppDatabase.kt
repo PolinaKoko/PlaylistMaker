@@ -10,8 +10,9 @@ import com.hfad.playlistmaker.media.data.db.entity.PlaylistTrackEntity
 import com.hfad.playlistmaker.media.data.db.entity.TrackEntity
 
 @Database(
-    version = 3,
-    entities = [TrackEntity::class, PlaylistEntity::class, PlaylistTrackEntity::class]
+    version = 4,
+    entities = [TrackEntity::class, PlaylistEntity::class, PlaylistTrackEntity::class],
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 

@@ -30,18 +30,15 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun addTrackToPlaylist(playlist: Playlist, track: Track): Boolean {
-        if (playlist.trackIds.contains(track.trackId)) {
+        val playlistWithTracks = playlistDao.getPlaylistWithTracks(playlist.id)
+        val alreadyExists = playlistWithTracks.tracks.any { it.trackId == track.trackId }
+        if (alreadyExists) {
             return false
         }
 
-        val updatePlaylist = playlist.copy(
-            trackIds = playlist.trackIds + track.trackId,
-            tracksCount = playlist.tracksCount + 1
-        )
-        playlistDao.updatePlaylist(convertor.map(updatePlaylist))
-
         val trackEntity = PlaylistTrackEntity(
-            id = track.trackId,
+            playlistId = playlist.id,
+            trackId = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
             trackTimeMillis = track.trackTimeMillis,
@@ -53,7 +50,10 @@ class PlaylistRepositoryImpl(
             previewUrl = track.previewUrl,
             addedAt = System.currentTimeMillis()
         )
+
+        val newCount = playlistDao.getTracksCount(playlist.id) + 1
         playlistTrackDao.insertTrack(trackEntity)
+        playlistDao.updateTracksCount(playlist.id, newCount)
 
         return true
     }

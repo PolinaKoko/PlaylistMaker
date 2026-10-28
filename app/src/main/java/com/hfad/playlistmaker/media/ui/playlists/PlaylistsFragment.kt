@@ -44,6 +44,8 @@ class PlaylistsFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             render(state)
         }
+
+        viewModel.loadPlaylists()
     }
 
     private fun render(state: PlaylistsState) {

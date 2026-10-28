@@ -58,7 +58,7 @@ val dataModule = module {
 
     factory { TrackDbConvertor() }
 
-    factory { PlaylistDbConvertor(get()) }
+    factory { PlaylistDbConvertor() }
 
     single { get<AppDatabase>().playlistTrackDao() }
 

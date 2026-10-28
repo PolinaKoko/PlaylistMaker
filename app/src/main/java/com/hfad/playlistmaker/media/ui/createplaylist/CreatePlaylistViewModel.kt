@@ -22,7 +22,6 @@ class CreatePlaylistViewModel(
                 name = name,
                 description = description,
                 coverPath = coverPath,
-                trackIds = emptyList(),
                 tracksCount = 0
             )
             playlistInteractor.addPlaylist(playlist)

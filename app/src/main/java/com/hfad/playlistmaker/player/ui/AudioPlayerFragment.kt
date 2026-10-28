@@ -50,6 +50,8 @@ class AudioPlayerFragment : Fragment() {
             val track = AudioPlayerFragmentArgs.fromBundle(requireArguments()).track
             viewModel.setTrack(track)
         }
+
+        viewModel.loadPlaylists()
     }
 
     private fun setupBottomSheet() {

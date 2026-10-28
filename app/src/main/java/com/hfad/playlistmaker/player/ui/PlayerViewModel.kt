@@ -48,10 +48,6 @@ class PlayerViewModel(
     fun addTrackToPlaylist(playlist: Playlist) {
         val track = currentTrack ?: return
 
-        if (playlist.trackIds.contains(track.trackId)) {
-            _addToPlaylistStatus.value = AddToPlaylistStatus.AlreadyExists(playlist.name)
-            return
-        }
         viewModelScope.launch {
             val success = playlistInteractor.addTrackPlaylist(playlist, track)
             if (success) {
@@ -67,11 +63,8 @@ class PlayerViewModel(
         _addToPlaylistStatus.value = null
     }
 
-    init {
-        loadPlaylists()
-    }
 
-    private fun loadPlaylists() {
+    fun loadPlaylists() {
         viewModelScope.launch {
             playlistInteractor.getPlaylists().collect { list ->
                 _playlists.value = list
