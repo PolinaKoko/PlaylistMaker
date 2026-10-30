@@ -188,4 +188,39 @@
         <item name="itemBackground">@android:color/transparent</item>
     </style>
 
+    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_stroke</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="hintTextColor">?attr/colorOnSurface</item>
+        <item name="android:textColorHint">?attr/colorOnSurface</item>
+        <item name="cursorColor">@color/blue</item>
+        <item name="boxCornerRadiusTopStart">@dimen/playlist_input_corner_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/playlist_input_corner_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/playlist_input_corner_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/playlist_input_corner_radius</item>
+        <item name="android:textSize">@dimen/playlist_input_text_size</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:lineSpacingMultiplier">1.0</item>
+    </style>
+
+    <style name="Widget.App.CreateButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:backgroundTint">@color/button_color_selector</item>
+        <item name="android:elevation">0dp</item>
+        <item name="cornerRadius">@dimen/playlist_button_corner_radius</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/playlist_button_text_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:lineSpacingMultiplier">1.0</item>
+    </style>
+
+    <style name="RoundedImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>

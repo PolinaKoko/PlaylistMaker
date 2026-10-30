@@ -15,11 +15,7 @@ class FavoritesViewModel(
     private val _state = MutableLiveData<FavoritesState>()
     val state: LiveData<FavoritesState> = _state
 
-    init {
-        loadFavorites()
-    }
-
-    private fun loadFavorites() {
+    fun loadFavorites() {
         _state.value = FavoritesState.Loading
         viewModelScope.launch {
             favoritesInteractor.getFavoriteTracks().collect { tracks ->

@@ -45,6 +45,8 @@ class FavoritesFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             render(state)
         }
+
+        viewModel.loadFavorites()
     }
 
     private fun render(state: FavoritesState) {
