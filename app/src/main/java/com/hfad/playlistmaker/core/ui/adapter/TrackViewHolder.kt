@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.search.ui.adapter
+package com.hfad.playlistmaker.core.ui.adapter
 
 import android.util.TypedValue
 import android.view.View

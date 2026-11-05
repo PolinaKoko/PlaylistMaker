@@ -3,6 +3,7 @@ package com.hfad.playlistmaker.media.data.repository
 import com.hfad.playlistmaker.core.domain.models.Playlist
 import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.media.data.db.converters.PlaylistDbConvertor
+import com.hfad.playlistmaker.media.data.db.converters.PlaylistTrackDbConvertor
 import com.hfad.playlistmaker.media.data.db.dao.PlaylistDao
 import com.hfad.playlistmaker.media.data.db.dao.PlaylistTrackDao
 import com.hfad.playlistmaker.media.data.db.entity.PlaylistTrackEntity
@@ -13,19 +14,20 @@ import kotlinx.coroutines.flow.map
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
     private val playlistTrackDao: PlaylistTrackDao,
-    private val convertor: PlaylistDbConvertor
+    private val playlistConvertor: PlaylistDbConvertor,
+    private val playlistTrackConvertor: PlaylistTrackDbConvertor
 ) : PlaylistRepository {
     override suspend fun addPlaylist(playlist: Playlist): Long {
-        return playlistDao.insertPlaylist(convertor.map(playlist))
+        return playlistDao.insertPlaylist(playlistConvertor.map(playlist))
     }
 
     override suspend fun updatePlaylist(playlist: Playlist) {
-        playlistDao.updatePlaylist(convertor.map(playlist))
+        playlistDao.updatePlaylist(playlistConvertor.map(playlist))
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistDao.getAllPlaylists().map { entities ->
-            entities.map { convertor.map(it) }
+            entities.map { playlistConvertor.map(it) }
         }
     }
 
@@ -56,5 +58,28 @@ class PlaylistRepositoryImpl(
         playlistDao.updateTracksCount(playlist.id, newCount)
 
         return true
+    }
+
+    override fun getPlaylistById(playlistId: Long): Flow<Playlist?> {
+        return playlistDao.getPlaylistById(playlistId).map { entity ->
+            entity?.let { playlistConvertor.map(it) }
+        }
+    }
+
+    override fun getTracksByPlaylistId(playlistId: Long): Flow<List<Track>> {
+        return playlistTrackDao.getTracksByPlaylistId(playlistId).map { entities ->
+            entities.map { playlistTrackConvertor.map(it) }
+        }
+    }
+
+    override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Long) {
+        playlistTrackDao.removeTrackFromPlaylist(playlistId, trackId)
+
+        val newCount = playlistDao.getTracksCount(playlistId)
+        playlistDao.updateTracksCount(playlistId, newCount)
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long) {
+        playlistDao.deletePlaylist(playlistId)
     }
 }

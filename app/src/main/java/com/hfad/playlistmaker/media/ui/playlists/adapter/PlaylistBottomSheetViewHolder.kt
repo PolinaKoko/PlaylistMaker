@@ -25,6 +25,7 @@ class PlaylistBottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(it
             playlistImage.visibility = View.VISIBLE
             placeholderImage.visibility = View.GONE
         } else {
+            playlistImage.setImageDrawable(null)
             playlistImage.visibility = View.GONE
             placeholderImage.visibility = View.VISIBLE
         }

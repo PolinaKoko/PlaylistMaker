@@ -29,6 +29,10 @@
         <action
             android:id="@+id/action_media_to_createPlaylist"
             app:destination="@id/createPlaylistFragment" />
+
+        <action
+            android:id="@+id/action_media_to_playlist"
+            app:destination="@id/playlistFragment" />
     </fragment>
 
     <fragment
@@ -56,6 +60,31 @@
         android:id="@+id/createPlaylistFragment"
         android:name="com.hfad.playlistmaker.media.ui.createplaylist.CreatePlaylistFragment"
         android:label="@string/create_playlist"
-        tools:layout="@layout/fragment_create_playlist" />
+        tools:layout="@layout/fragment_create_playlist">
+
+        <argument
+            android:name="playlistId"
+            app:argType="long" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.hfad.playlistmaker.media.ui.playlist.PlaylistFragment"
+        android:label="@string/playlist"
+        tools:layout="@layout/fragment_playlist">
+
+        <argument
+            android:name="playlistId"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/action_playlist_to_player"
+            app:destination="@id/audioPlayerFragment" />
+
+        <action
+            android:id="@+id/action_playlist_to_editPlaylist"
+            app:destination="@id/createPlaylistFragment" />
+    </fragment>
 
 </navigation>

@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hfad.playlistmaker.core.ui.adapter.TrackAdapter
 import com.hfad.playlistmaker.databinding.FragmentFavoritesBinding
 import com.hfad.playlistmaker.media.ui.MediaFragmentDirections
-import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoritesFragment : Fragment() {
@@ -33,12 +33,14 @@ class FavoritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TrackAdapter { track ->
-            findNavController().navigate(
-                MediaFragmentDirections.actionMediaToPlayer(track)
-            )
-        }
-
+        adapter = TrackAdapter(
+            onItemClick = { track ->
+                val action = MediaFragmentDirections.actionMediaToPlayer(track)
+                findNavController().navigate(action)
+            },
+            onLongItemClick = { track ->
+            }
+        )
         binding.rvFavorites.layoutManager = LinearLayoutManager(requireContext())
         binding.rvFavorites.adapter = adapter
 

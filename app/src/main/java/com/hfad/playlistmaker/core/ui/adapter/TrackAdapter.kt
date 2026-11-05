@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.search.ui.adapter
+package com.hfad.playlistmaker.core.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,8 @@ import com.hfad.playlistmaker.core.domain.models.Track
 
 
 class TrackAdapter(
-    private val onItemClick: (Track) -> Unit
+    private val onItemClick: (Track) -> Unit,
+    private val onLongItemClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder>() {
     private var tracks = listOf<Track>()
 
@@ -28,6 +29,10 @@ class TrackAdapter(
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClick(track)
+        }
+        holder.itemView.setOnLongClickListener {
+            onLongItemClick(track)
+            true
         }
     }
 
