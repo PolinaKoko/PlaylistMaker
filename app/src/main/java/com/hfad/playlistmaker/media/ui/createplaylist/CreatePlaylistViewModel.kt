@@ -28,4 +28,30 @@ class CreatePlaylistViewModel(
             onSuccess(name)
         }
     }
+
+    fun loadPlaylist(playlistId: Long, onLoaded: (Playlist?) -> Unit) {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylistById(playlistId).collect { playlist ->
+                onLoaded(playlist)
+            }
+        }
+    }
+
+    fun updatePlaylist(
+        playlist: Playlist,
+        name: String,
+        description: String?,
+        coverPath: String?,
+        onSuccess: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val updatePlaylist = playlist.copy(
+                name = name,
+                description = description,
+                coverPath = coverPath
+            )
+            playlistInteractor.updatePlaylist(updatePlaylist)
+            onSuccess(name)
+        }
+    }
 }

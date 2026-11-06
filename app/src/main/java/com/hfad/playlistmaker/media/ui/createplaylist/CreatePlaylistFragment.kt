@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.core.domain.models.Playlist
 import com.hfad.playlistmaker.databinding.FragmentCreatePlaylistBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -29,6 +30,9 @@ class CreatePlaylistFragment : Fragment() {
 
     private var selectedImageUri: Uri? = null
     private var hasUnsavedChanges = false
+
+    private var playlistId: Long = 0L
+    private var currentPlaylist: Playlist? = null
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -53,6 +57,33 @@ class CreatePlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        playlistId = arguments?.getLong("playlistId") ?: 0L
+
+        if (playlistId != 0L) {
+            binding.headerTitle.text = getString(R.string.edit)
+            binding.createButton.text = getString(R.string.save)
+
+            viewModel.loadPlaylist(playlistId) { playlist ->
+                if (playlist != null) {
+                    currentPlaylist = playlist
+                    binding.nameEditText.setText(playlist.name)
+                    binding.descriptionEditText.setText(playlist.description)
+
+                    if (playlist.coverPath != null) {
+                        selectedImageUri = Uri.fromFile(File(playlist.coverPath))
+                        binding.coverImage.setImageURI(selectedImageUri)
+                        binding.coverImage.visibility = View.VISIBLE
+                        binding.coverIcon.visibility = View.GONE
+                    }
+                    hasUnsavedChanges = false
+                }
+            }
+        } else {
+
+            binding.headerTitle.text = getString(R.string.create_playlist)
+            binding.createButton.text = getString(R.string.create)
+        }
 
         binding.nameEditText.doAfterTextChanged { text ->
             binding.createButton.isEnabled = !text.isNullOrBlank()
@@ -101,6 +132,11 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun handleBack() {
+        if (playlistId != 0L) {
+            findNavController().navigateUp()
+            return
+        }
+
         if (hasUnsavedChanges) {
             showExitDialog()
         } else {
@@ -125,15 +161,35 @@ class CreatePlaylistFragment : Fragment() {
     private fun createPlaylist() {
         val name = binding.nameEditText.text.toString().trim()
         val description = binding.descriptionEditText.text.toString().trim().ifEmpty { null }
-        val coverPath = selectedImageUri?.let { saveImageToPrivateStorage(it) }
 
-        viewModel.createPlaylist(name, description, coverPath) { createdName ->
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_created, createdName),
-                Toast.LENGTH_SHORT
-            ).show()
-            findNavController().navigateUp()
+        val coverPath = if (selectedImageUri != null) {
+            if (selectedImageUri!!.scheme == "content") {
+                saveImageToPrivateStorage(selectedImageUri!!)
+            } else {
+                currentPlaylist?.coverPath
+            }
+        } else {
+
+            null
+        }
+
+        if (playlistId != 0L && currentPlaylist != null) {
+            viewModel.updatePlaylist(currentPlaylist!!, name, description, coverPath) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_updated),
+                    Toast.LENGTH_SHORT
+                ).show()
+                findNavController().navigateUp()
+            }
+        } else {
+            viewModel.createPlaylist(name, description, coverPath) { createName ->
+                Toast.makeText(
+                    requireContext(), getString(R.string.playlist_created, createName),
+                    Toast.LENGTH_SHORT
+                ).show()
+                findNavController().navigateUp()
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.hfad.playlistmaker.media.data.db.AppDatabase
 import com.hfad.playlistmaker.media.data.db.converters.PlaylistDbConvertor
+import com.hfad.playlistmaker.media.data.db.converters.PlaylistTrackDbConvertor
 import com.hfad.playlistmaker.media.data.db.converters.TrackDbConvertor
 import com.hfad.playlistmaker.media.data.repository.FavoritesRepositoryImpl
 import com.hfad.playlistmaker.media.data.repository.PlaylistRepositoryImpl
@@ -60,6 +61,8 @@ val dataModule = module {
 
     factory { PlaylistDbConvertor() }
 
+    factory { PlaylistTrackDbConvertor() }
+
     single { get<AppDatabase>().playlistTrackDao() }
 
     single { get<AppDatabase>().favoriteDao() }
@@ -67,7 +70,7 @@ val dataModule = module {
     single { get<AppDatabase>().playlistDao() }
 
     factory<PlaylistRepository> {
-        PlaylistRepositoryImpl(get(), get(), get())
+        PlaylistRepositoryImpl(get(), get(), get(), get())
     }
 
     factory<FavoritesRepository> {

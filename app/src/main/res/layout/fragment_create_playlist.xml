@@ -21,6 +21,7 @@
         app:tint="?attr/colorOnSurface" />
 
     <TextView
+        android:id="@+id/headerTitle"
         style="@style/SearchTitleStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

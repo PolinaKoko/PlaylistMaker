@@ -223,4 +223,9 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <style name="RoundedImageStyleSmall">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+
 </resources>

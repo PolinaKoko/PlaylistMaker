@@ -25,6 +25,7 @@ class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             playlistImage.visibility = View.VISIBLE
             placeholderImage.visibility = View.GONE
         } else {
+            playlistImage.setImageDrawable(null)
             playlistImage.visibility = View.GONE
             placeholderImage.visibility = View.VISIBLE
         }

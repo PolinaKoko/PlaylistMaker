@@ -9,8 +9,8 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hfad.playlistmaker.core.ui.adapter.TrackAdapter
 import com.hfad.playlistmaker.databinding.FragmentSearchBinding
-import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -57,11 +57,17 @@ class SearchFragment : Fragment() {
 
 
     private fun setupAdapters() {
-        adapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
+        adapter = TrackAdapter(
+            onItemClick = { track -> viewModel.onTrackClicked(track) },
+            onLongItemClick = {}
+        )
         binding.rvTracks.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTracks.adapter = adapter
 
-        historyAdapter = TrackAdapter { track -> viewModel.onTrackClicked(track) }
+        historyAdapter = TrackAdapter(
+            onItemClick = { track -> viewModel.onTrackClicked(track) },
+            onLongItemClick = {}
+        )
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
     }

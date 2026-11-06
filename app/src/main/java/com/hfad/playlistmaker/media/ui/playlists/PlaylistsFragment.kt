@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.hfad.playlistmaker.media.ui.MediaFragmentDirections
 import com.hfad.playlistmaker.media.ui.playlists.adapter.PlaylistAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,7 +33,10 @@ class PlaylistsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PlaylistAdapter {}
+        adapter = PlaylistAdapter { playlist ->
+            val action = MediaFragmentDirections.actionMediaToPlaylist(playlist.id)
+            findNavController().navigate(action)
+        }
 
         binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.playlistsRecyclerView.adapter = adapter
