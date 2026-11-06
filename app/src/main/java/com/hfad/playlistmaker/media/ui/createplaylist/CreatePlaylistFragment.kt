@@ -175,7 +175,11 @@ class CreatePlaylistFragment : Fragment() {
 
         if (playlistId != 0L && currentPlaylist != null) {
             viewModel.updatePlaylist(currentPlaylist!!, name, description, coverPath) {
-                Toast.makeText(requireContext(), "Плейлист обновлен", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_updated),
+                    Toast.LENGTH_SHORT
+                ).show()
                 findNavController().navigateUp()
             }
         } else {

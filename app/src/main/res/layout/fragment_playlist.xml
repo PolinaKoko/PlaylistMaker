@@ -133,7 +133,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Назад"
+            android:contentDescription="@string/back_arrow"
             android:src="@drawable/ic_arrow_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -157,6 +157,18 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/rounder" />
 
+        <TextView
+            android:id="@+id/tvEmptyTracks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:text="@string/no_tracks_message"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:fontFamily="@font/ys_display_regular"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTracks"
             android:layout_width="match_parent"
@@ -171,7 +183,7 @@
     <LinearLayout
         android:id="@+id/menuBottomSheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="360dp"
         android:background="@drawable/bottom_sheet_bg"
         android:orientation="vertical"
         app:behavior_hideable="true"
@@ -213,7 +225,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="Best songs 2021" />
 
                 <TextView
@@ -221,7 +233,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@color/gray"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     tools:text="98 треков" />
             </LinearLayout>
         </LinearLayout>
@@ -234,7 +246,7 @@
             android:fontFamily="@font/ys_display_regular"
             android:gravity="center_vertical"
             android:text="@string/share_playlist"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="16sp" />
 
         <TextView
@@ -245,7 +257,7 @@
             android:fontFamily="@font/ys_display_regular"
             android:gravity="center_vertical"
             android:text="@string/edit_playlist"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="16sp" />
 
         <TextView
@@ -256,7 +268,7 @@
             android:fontFamily="@font/ys_display_regular"
             android:gravity="center_vertical"
             android:text="@string/delete_playlist"
-            android:textColor="@color/black"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="16sp" />
 
     </LinearLayout>

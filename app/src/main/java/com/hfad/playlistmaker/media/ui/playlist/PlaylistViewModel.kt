@@ -8,9 +8,8 @@ import com.hfad.playlistmaker.core.domain.models.Playlist
 import com.hfad.playlistmaker.core.domain.models.Track
 import com.hfad.playlistmaker.media.domain.db.PlaylistInteractor
 import com.hfad.playlistmaker.util.SingleLiveEvent
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor
@@ -25,7 +24,13 @@ class PlaylistViewModel(
     private val _navigateBack = SingleLiveEvent<Unit>()
     val navigateBack: LiveData<Unit> = _navigateBack
 
+    private var playlistJob: Job? = null
+    private var tracksJob: Job? = null
+
     fun loadPlaylist(playlistId: Long) {
+        playlistJob?.cancel()
+        tracksJob?.cancel()
+
         viewModelScope.launch {
             playlistInteractor.getPlaylistById(playlistId).collect { playlist ->
                 currentPlaylist = playlist
@@ -43,14 +48,15 @@ class PlaylistViewModel(
 
     fun getShareText(
         playlist: Playlist,
-        tracks: List<Track>
+        tracks: List<Track>,
+        tracksCountText: String
     ): String {
         return buildString {
             append("${playlist.name}\n")
             if (!playlist.description.isNullOrEmpty()) {
                 append("${playlist.description}\n")
             }
-            append("${tracks.size} треков\n")
+            append("$tracksCountText\n")
             tracks.forEachIndexed { index, track ->
                 append("${index + 1}. ${track.artistName} - ${track.trackName} (${track.getTrackTime()}) \n")
             }
@@ -68,8 +74,9 @@ class PlaylistViewModel(
     }
 
     private fun calculateTotalDuration(tracks: List<Track>): String {
-        val sum = tracks.sumOf { it.trackTimeMillis }
-        return SimpleDateFormat("mm", Locale.getDefault()).format(sum)
+        val totalMillis = tracks.sumOf { it.trackTimeMillis }
+        val totalMinutes = totalMillis / 1000 / 60
+        return totalMinutes.toString()
     }
 
     fun removeTrackFromPlaylist(playlistId: Long, trackId: Long) {

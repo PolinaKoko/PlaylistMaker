@@ -70,7 +70,7 @@ class PlaylistFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "В этом плейлисте нет списка треков, которым можно поделиться",
+                    getString(R.string.empty_share_message),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -91,7 +91,7 @@ class PlaylistFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "В этом плейлисте нет списка треков, которым можно поделиться",
+                    getString(R.string.empty_share_message),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -126,9 +126,9 @@ class PlaylistFragment : Fragment() {
 
     private fun showDeletePlaylistDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setMessage("Вы уверены, что хотите удалить этот плейлист?")
-            .setNegativeButton("НЕТ") { dialog, _ -> dialog.dismiss() }
-            .setPositiveButton("ДА") { dialog, _ ->
+            .setMessage(getString(R.string.delete_playlist_message))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                 viewModel.deletePlaylist(playlistId)
                 dialog.dismiss()
             }
@@ -139,21 +139,26 @@ class PlaylistFragment : Fragment() {
         playlist: Playlist,
         tracks: List<Track>
     ) {
-        val textToShare = viewModel.getShareText(playlist, tracks)
+        val tracksCountText = resources.getQuantityString(
+            R.plurals.track_count,
+            tracks.size,
+            tracks.size
+        )
+        val textToShare = viewModel.getShareText(playlist, tracks, tracksCountText)
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, textToShare)
         }
-        startActivity(Intent.createChooser(intent, "Поделиться плейлистом"))
+        startActivity(Intent.createChooser(intent, getString(R.string.share_playlist_chooser)))
     }
 
     private fun showDeleteDialog(track: Track) {
         MaterialAlertDialogBuilder(requireContext())
-            .setMessage("Хотите удалить трек?")
-            .setNegativeButton("НЕТ") { dialog, _ ->
+            .setMessage(getString(R.string.delete_track_message))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("ДА") { dialog, _ ->
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                 viewModel.removeTrackFromPlaylist(playlistId, track.trackId)
                 dialog.dismiss()
             }
@@ -187,6 +192,8 @@ class PlaylistFragment : Fragment() {
 
         when (state) {
             is PlaylistState.Content -> {
+                binding.tvEmptyTracks.visibility = View.GONE
+
                 binding.tvPlaylistName.text = state.playlist.name
                 if (state.playlist.description.isNullOrEmpty()) {
                     binding.tvDescription.visibility = View.GONE
@@ -195,19 +202,36 @@ class PlaylistFragment : Fragment() {
                     binding.tvDescription.text = state.playlist.description
                 }
 
-                binding.tvTotalDuration.text = "${state.totalDuration} минут"
-                binding.tvTracksCount.text = "${state.tracks.size} треков"
-
+                binding.tvTotalDuration.text = resources.getQuantityString(
+                    R.plurals.total_duration,
+                    state.totalDuration.toIntOrNull() ?: 0,
+                    state.totalDuration.toIntOrNull() ?: 0
+                )
+                binding.tvTracksCount.text = resources.getQuantityString(
+                    R.plurals.track_count,
+                    state.tracks.size,
+                    state.tracks.size
+                )
                 adapter.updateTracks(state.tracks)
 
                 updateMenu(state.playlist, state.tracks.size)
             }
 
             is PlaylistState.Empty -> {
+                binding.tvEmptyTracks.visibility = View.VISIBLE
+
                 binding.tvPlaylistName.text = state.playlist.name
                 binding.tvDescription.text = state.playlist.description
-                binding.tvTotalDuration.text = "${state.totalDuration} минут"
-                binding.tvTracksCount.text = "0 треков"
+                binding.tvTotalDuration.text = resources.getQuantityString(
+                    R.plurals.total_duration,
+                    state.totalDuration.toIntOrNull() ?: 0,
+                    state.totalDuration.toIntOrNull() ?: 0
+                )
+                binding.tvTracksCount.text = resources.getQuantityString(
+                    R.plurals.track_count,
+                    0,
+                    0
+                )
 
                 adapter.updateTracks(emptyList())
 
@@ -219,7 +243,11 @@ class PlaylistFragment : Fragment() {
     private fun updateMenu(playlist: Playlist, trackCount: Int) {
 
         binding.menuPlaylistName.text = playlist.name
-        binding.menuTracksCount.text = "$trackCount треков"
+        binding.menuTracksCount.text = resources.getQuantityString(
+            R.plurals.track_count,
+            trackCount,
+            trackCount
+        )
 
         if (playlist.coverPath != null) {
             Glide.with(this)
